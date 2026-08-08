@@ -324,7 +324,7 @@ function SpaceView({ spaceId }: { spaceId: string }) {
                 {metrics.map((m, i) => (
                   <Line
                     key={m.id}
-                    type="monotone"
+                    type="linear"
                     dataKey={m.label}
                     stroke={space.color || '#0f172a'}
                     strokeWidth={2.4}
