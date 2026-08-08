@@ -209,6 +209,7 @@ function SpaceView({ spaceId }: { spaceId: string }) {
       {space.kind === 'business' ? <BusinessPanel /> : null}
       {space.kind === 'body' ? <BodyPanel /> : null}
 
+      {space.kind !== 'body' ? (
       <section className="panel">
         <h2>タスク</h2>
         <div className="task-list" style={{ marginBottom: '0.8rem' }}>
@@ -264,6 +265,7 @@ function SpaceView({ spaceId }: { spaceId: string }) {
           </button>
         </div>
       </section>
+      ) : null}
 
       {space.kind !== 'body' ? (
         <section className="panel">

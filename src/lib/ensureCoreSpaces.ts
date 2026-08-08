@@ -9,11 +9,6 @@ const DEFAULT_BUSINESS_TASKS: Omit<Task, 'id' | 'spaceId' | 'createdAt'>[] = [
   { title: '週DM 80 / 商談 2', scope: 'week', done: false },
 ]
 
-const DEFAULT_BODY_TASKS: Omit<Task, 'id' | 'spaceId' | 'createdAt'>[] = [
-  { title: 'トレーニング or 歩数確保', scope: 'today', done: false },
-  { title: '体重を3回以上記録', scope: 'week', done: false },
-]
-
 /** 固定項目（削除不可）のキー */
 export const LOCKED_SPACE_KEYS = [
   'business',
@@ -120,13 +115,13 @@ export function ensureCoreSpaces(
     if (preset.key === 'business') {
       tasks = [...makeTasks(created.id, DEFAULT_BUSINESS_TASKS), ...tasks]
     }
-    if (preset.key === 'body') {
-      tasks = [...makeTasks(created.id, DEFAULT_BODY_TASKS), ...tasks]
-    }
   }
 
   const business = byKey().get('business')
   const body = byKey().get('body')
+  const bodyIds = new Set(spaces.filter((s) => s.kind === 'body').map((s) => s.id))
+  tasks = tasks.filter((t) => !bodyIds.has(t.spaceId))
+
   if (business) metrics = syncDmMetricPoints(data.business, metrics, business.id)
   if (body) metrics = syncBodyMetricPoints(data.body, metrics, body.id)
 
