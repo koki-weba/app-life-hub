@@ -34,8 +34,8 @@ const PRESET_SPACES: {
   { key: 'business', name: '起業', kind: 'business', color: '#2563eb' },
   { key: 'university', name: '大学', kind: 'custom', color: '#16a34a' },
   { key: 'body', name: '筋トレ', kind: 'body', color: '#dc2626' },
-  { key: 'creative', name: '創作', kind: 'custom', color: '#ca8a04' },
-  { key: 'driving', name: '自動車学校', kind: 'custom', color: '#eab308' },
+  { key: 'creative', name: '趣味', kind: 'custom', color: '#eab308' },
+  { key: 'driving', name: '自動車学校', kind: 'custom', color: '#84cc16' },
 ]
 
 function makeTasks(spaceId: string, defs: Omit<Task, 'id' | 'spaceId' | 'createdAt'>[]): Task[] {
@@ -52,7 +52,7 @@ function spaceKey(sp: Space): string | undefined {
   if (sp.kind === 'business') return 'business'
   if (sp.kind === 'body') return 'body'
   if (sp.name === '大学') return 'university'
-  if (sp.name === '創作') return 'creative'
+  if (sp.name === '創作' || sp.name === '趣味') return 'creative'
   if (sp.name === '自動車学校') return 'driving'
   return undefined
 }

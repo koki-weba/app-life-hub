@@ -366,7 +366,7 @@ function SettingsView() {
       <section className="panel">
         <h2>項目一覧</h2>
         <p className="muted small" style={{ marginTop: '-0.35rem', marginBottom: '0.75rem' }}>
-          追加・削除はこの設定画面でのみ行えます。起業・大学・筋トレ・創作・自動車学校は削除できません。
+          追加・削除はこの設定画面でのみ行えます。起業・大学・筋トレ・趣味・自動車学校は削除できません。
         </p>
         <div className="task-list">
           {spaces.map((sp) => {
