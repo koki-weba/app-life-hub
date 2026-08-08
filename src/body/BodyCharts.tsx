@@ -134,7 +134,7 @@ function ChartBlock({
               formatter={(value) => (value === 'daily' ? '日次' : '7日平均')}
             />
             <Line
-              type="monotone"
+              type="linear"
               dataKey="daily"
               name="daily"
               stroke={color}
@@ -146,7 +146,7 @@ function ChartBlock({
               animationDuration={500}
             />
             <Line
-              type="monotone"
+              type="linear"
               dataKey="avg7"
               name="avg7"
               stroke={color}
