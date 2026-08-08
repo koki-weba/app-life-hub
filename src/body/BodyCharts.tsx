@@ -138,7 +138,9 @@ function ChartBlock({
               dataKey="daily"
               name="daily"
               stroke={color}
-              strokeWidth={2.2}
+              strokeWidth={2}
+              strokeOpacity={0.45}
+              strokeDasharray="5 4"
               dot={false}
               connectNulls={false}
               animationDuration={500}
@@ -148,9 +150,7 @@ function ChartBlock({
               dataKey="avg7"
               name="avg7"
               stroke={color}
-              strokeWidth={2}
-              strokeOpacity={0.45}
-              strokeDasharray="5 4"
+              strokeWidth={2.2}
               dot={false}
               connectNulls
               animationDuration={500}
