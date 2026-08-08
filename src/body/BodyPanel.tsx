@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useHub } from '../store'
 import type { MuscleGroup, WorkoutEntry, WorkoutSet } from '../types'
+import { BodyCharts } from './BodyCharts'
 import {
   MUSCLE_LABELS,
   est1rm,
@@ -633,6 +634,8 @@ export function BodyPanel() {
           </button>
         </section>
       )}
+
+      <BodyCharts />
     </div>
   )
 }

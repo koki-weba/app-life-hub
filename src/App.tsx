@@ -265,47 +265,49 @@ function SpaceView({ spaceId }: { spaceId: string }) {
         </div>
       </section>
 
-      <section className="panel">
-        <h2>数値</h2>
-        {metrics.map((m) => {
-          const last = m.points?.[m.points.length - 1]
-          return (
-            <div key={m.id} className="metric-card">
-              <div>
-                <div className="muted small">{m.label}</div>
-                <strong>{last ? last.value : '—'}</strong>
+      {space.kind !== 'body' ? (
+        <section className="panel">
+          <h2>数値</h2>
+          {metrics.map((m) => {
+            const last = m.points?.[m.points.length - 1]
+            return (
+              <div key={m.id} className="metric-card">
+                <div>
+                  <div className="muted small">{m.label}</div>
+                  <strong>{last ? last.value : '—'}</strong>
+                </div>
+                <div className="row">
+                  <input
+                    className="input"
+                    style={{ width: '5.5rem' }}
+                    inputMode="decimal"
+                    placeholder="値"
+                    value={metricValue}
+                    onChange={(e) => setMetricValue(e.target.value)}
+                  />
+                  <button
+                    type="button"
+                    className="btn sm ghost"
+                    onClick={() => {
+                      const v = Number(metricValue)
+                      if (!Number.isFinite(v)) return
+                      addMetricPoint(m.id, v)
+                      setMetricValue('')
+                    }}
+                  >
+                    記録
+                  </button>
+                </div>
               </div>
-              <div className="row">
-                <input
-                  className="input"
-                  style={{ width: '5.5rem' }}
-                  inputMode="decimal"
-                  placeholder="値"
-                  value={metricValue}
-                  onChange={(e) => setMetricValue(e.target.value)}
-                />
-                <button
-                  type="button"
-                  className="btn sm ghost"
-                  onClick={() => {
-                    const v = Number(metricValue)
-                    if (!Number.isFinite(v)) return
-                    addMetricPoint(m.id, v)
-                    setMetricValue('')
-                  }}
-                >
-                  記録
-                </button>
-              </div>
-            </div>
-          )
-        })}
-        {metrics.length === 0 ? (
-          <div className="empty">この項目のメトリクスはまだありません</div>
-        ) : null}
-      </section>
+            )
+          })}
+          {metrics.length === 0 ? (
+            <div className="empty">この項目のメトリクスはまだありません</div>
+          ) : null}
+        </section>
+      ) : null}
 
-      {chartData.length > 0 ? (
+      {space.kind !== 'body' && chartData.length > 0 ? (
         <section className="panel">
           <h2>推移</h2>
           <p className="muted small" style={{ marginTop: '-0.35rem', marginBottom: '0.7rem' }}>
