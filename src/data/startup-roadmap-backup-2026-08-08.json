@@ -1,0 +1,2173 @@
+{
+  "schemaVersion": 5,
+  "profile": {
+    "name": "佐藤陽斗",
+    "businessName": "Web制作・MEO",
+    "motto": "2億円売却への過程"
+  },
+  "settings": {
+    "ultimateMonthly": 600000,
+    "ultimateTakeHome": 400000,
+    "dmDailyGoal": 10,
+    "dmWeeklyGoal": 140,
+    "defaultTakeHomeRate": 67
+  },
+  "milestones": {
+    "p1-m1": {
+      "done": false,
+      "doneAt": null
+    },
+    "p1-m2": {
+      "done": false,
+      "doneAt": null
+    },
+    "p1-m3": {
+      "done": false,
+      "doneAt": null
+    },
+    "p1-m4": {
+      "done": false,
+      "doneAt": null
+    },
+    "p2-m1": {
+      "done": false,
+      "doneAt": null
+    },
+    "p2-m2": {
+      "done": false,
+      "doneAt": null
+    },
+    "p2-m3": {
+      "done": false,
+      "doneAt": null
+    },
+    "p3-m1": {
+      "done": false,
+      "doneAt": null
+    },
+    "p3-m2": {
+      "done": false,
+      "doneAt": null
+    },
+    "p3-m3": {
+      "done": false,
+      "doneAt": null
+    },
+    "p4-m1": {
+      "done": false,
+      "doneAt": null
+    },
+    "p4-m2": {
+      "done": false,
+      "doneAt": null
+    },
+    "p4-m3": {
+      "done": false,
+      "doneAt": null
+    },
+    "p5-m1": {
+      "done": false,
+      "doneAt": null
+    },
+    "p5-m2": {
+      "done": false,
+      "doneAt": null
+    },
+    "p5-m3": {
+      "done": false,
+      "doneAt": null
+    },
+    "p5-m4": {
+      "done": false,
+      "doneAt": null
+    }
+  },
+  "monthlyRecords": [
+    {
+      "revenue": 0,
+      "takeHome": 0,
+      "notes": "",
+      "month": "2026-05",
+      "recurring": 0,
+      "updatedAt": "2026-06-14T15:14:45.460Z"
+    },
+    {
+      "revenue": 0,
+      "notes": "",
+      "takeHome": 0,
+      "month": "2026-06",
+      "recurring": 0,
+      "updatedAt": "2026-06-14T15:14:55.300Z"
+    },
+    {
+      "revenue": 0,
+      "notes": "",
+      "takeHome": 0,
+      "month": "2026-04",
+      "recurring": 0,
+      "updatedAt": "2026-06-14T15:15:04.083Z"
+    },
+    {
+      "revenue": 0,
+      "takeHome": 0,
+      "notes": "",
+      "month": "2026-03",
+      "recurring": 0,
+      "updatedAt": "2026-06-14T15:15:11.854Z"
+    },
+    {
+      "revenue": 0,
+      "takeHome": 0,
+      "notes": "",
+      "month": "2026-02",
+      "recurring": 0,
+      "updatedAt": "2026-06-14T15:15:37.982Z"
+    }
+  ],
+  "clients": [],
+  "igList": [
+    {
+      "instagramId": "private.salon.saku",
+      "name": "",
+      "memo": "",
+      "createdAt": "2026-07-29T22:32:08.990Z",
+      "id": "1785364328990_y0h7h3",
+      "updatedAt": "2026-07-29T22:32:08.990Z"
+    },
+    {
+      "name": "",
+      "instagramId": "initium2525",
+      "memo": "",
+      "createdAt": "2026-07-27T07:03:43.326Z",
+      "id": "1785135823326_lszef2",
+      "updatedAt": "2026-07-27T07:03:43.326Z"
+    },
+    {
+      "instagramId": "meow_osaka_2",
+      "name": "",
+      "createdAt": "2026-07-27T06:33:31.245Z",
+      "memo": "",
+      "id": "1785134011245_p58qlm",
+      "updatedAt": "2026-07-27T06:33:31.245Z"
+    },
+    {
+      "instagramId": "ola_mito.tarumi",
+      "name": "",
+      "memo": "",
+      "createdAt": "2026-07-27T06:18:11.091Z",
+      "id": "1785133091091_ydgxkv",
+      "updatedAt": "2026-07-27T06:18:11.091Z"
+    },
+    {
+      "instagramId": "chion_ymg",
+      "name": "",
+      "memo": "",
+      "createdAt": "2026-07-27T06:07:02.542Z",
+      "id": "1785132422542_0775de",
+      "updatedAt": "2026-07-27T06:07:02.542Z"
+    },
+    {
+      "instagramId": "daisy_r8.8.8",
+      "name": "",
+      "createdAt": "2026-07-27T05:58:27.665Z",
+      "memo": "",
+      "id": "1785131907665_ktoxjf",
+      "updatedAt": "2026-07-27T05:58:27.665Z"
+    },
+    {
+      "name": "",
+      "instagramId": "salon_el_21",
+      "createdAt": "2026-07-27T02:08:00.964Z",
+      "memo": "",
+      "id": "1785118080964_c9m5rw",
+      "updatedAt": "2026-07-27T02:08:00.964Z"
+    },
+    {
+      "instagramId": "star_thai_massage25",
+      "name": "",
+      "createdAt": "2026-07-27T02:00:32.718Z",
+      "memo": "",
+      "id": "1785117632718_zglfj3",
+      "updatedAt": "2026-07-27T02:00:32.718Z"
+    },
+    {
+      "name": "",
+      "instagramId": "kou_by_hogushiyasu",
+      "createdAt": "2026-07-27T01:56:25.975Z",
+      "memo": "",
+      "id": "1785117385975_x0mrri",
+      "updatedAt": "2026-07-27T01:56:25.975Z"
+    },
+    {
+      "name": "",
+      "instagramId": "couka.skincare",
+      "memo": "",
+      "createdAt": "2026-07-26T05:31:14.035Z",
+      "id": "1785043874035_b5xnfs",
+      "updatedAt": "2026-07-26T05:31:14.035Z"
+    },
+    {
+      "instagramId": "gussuriha_sakai",
+      "name": "",
+      "memo": "",
+      "createdAt": "2026-07-26T05:30:59.523Z",
+      "id": "1785043859523_4i3f6t",
+      "updatedAt": "2026-07-26T05:30:59.523Z"
+    },
+    {
+      "name": "",
+      "instagramId": "moon_kogao_103",
+      "createdAt": "2026-07-26T05:30:37.636Z",
+      "memo": "",
+      "id": "1785043837636_imgkc8",
+      "updatedAt": "2026-07-26T05:30:37.636Z"
+    },
+    {
+      "instagramId": "sorairo.kokura",
+      "name": "",
+      "createdAt": "2026-07-26T05:30:22.110Z",
+      "memo": "",
+      "id": "1785043822110_g7ocrc",
+      "updatedAt": "2026-07-26T05:30:22.110Z"
+    },
+    {
+      "name": "",
+      "instagramId": "maisonde_noe",
+      "createdAt": "2026-07-26T05:30:09.960Z",
+      "memo": "",
+      "id": "1785043809960_ncyulj",
+      "updatedAt": "2026-07-26T05:30:09.960Z"
+    },
+    {
+      "name": "",
+      "instagramId": "santo_om_in_healing",
+      "memo": "",
+      "createdAt": "2026-07-26T04:55:11.733Z",
+      "id": "1785041711733_jeg5a6",
+      "updatedAt": "2026-07-26T04:55:11.733Z"
+    },
+    {
+      "name": "",
+      "instagramId": "soin.plus.mmm",
+      "createdAt": "2026-07-26T04:54:47.843Z",
+      "memo": "",
+      "id": "1785041687843_wkjuya",
+      "updatedAt": "2026-07-26T04:54:47.843Z"
+    },
+    {
+      "name": "",
+      "instagramId": "solamour_iyasi",
+      "memo": "",
+      "createdAt": "2026-07-26T04:54:32.146Z",
+      "id": "1785041672146_bbn3v3",
+      "updatedAt": "2026-07-26T04:54:32.146Z"
+    },
+    {
+      "name": "",
+      "instagramId": "hyne_kaori",
+      "createdAt": "2026-07-26T04:54:07.260Z",
+      "memo": "",
+      "id": "1785041647260_dvuy1e",
+      "updatedAt": "2026-07-26T04:54:07.260Z"
+    },
+    {
+      "name": "",
+      "instagramId": "kiara0707a",
+      "memo": "",
+      "createdAt": "2026-07-26T04:53:45.606Z",
+      "id": "1785041625606_6kxjg9",
+      "updatedAt": "2026-07-26T04:53:45.606Z"
+    },
+    {
+      "instagramId": "beauty_place_pearl",
+      "name": "",
+      "memo": "",
+      "createdAt": "2026-07-26T04:53:07.851Z",
+      "id": "1785041587851_u9u6gn",
+      "updatedAt": "2026-07-26T04:53:07.851Z"
+    },
+    {
+      "instagramId": "macherie_lymph",
+      "name": "",
+      "createdAt": "2026-07-26T04:52:54.117Z",
+      "memo": "",
+      "id": "1785041574117_wnnxga",
+      "updatedAt": "2026-07-26T04:52:54.117Z"
+    },
+    {
+      "instagramId": "lumicel_1112",
+      "name": "",
+      "memo": "",
+      "createdAt": "2026-07-26T04:44:15.887Z",
+      "id": "1785041055887_sjxc6v",
+      "updatedAt": "2026-07-26T04:44:15.887Z"
+    },
+    {
+      "name": "",
+      "instagramId": "kizashiya",
+      "memo": "",
+      "createdAt": "2026-07-26T04:38:02.621Z",
+      "id": "1785040682621_sgoaks",
+      "updatedAt": "2026-07-26T04:38:02.621Z"
+    },
+    {
+      "name": "",
+      "instagramId": "salon_prive_ufu",
+      "createdAt": "2026-07-26T04:36:16.343Z",
+      "memo": "",
+      "id": "1785040576343_dmkv64",
+      "updatedAt": "2026-07-26T04:36:16.343Z"
+    },
+    {
+      "name": "",
+      "instagramId": "kakuregasalon_yukuru",
+      "memo": "",
+      "createdAt": "2026-07-26T04:35:33.561Z",
+      "id": "1785040533561_aem3jk",
+      "updatedAt": "2026-07-26T04:35:33.561Z"
+    },
+    {
+      "name": "",
+      "instagramId": "aco.drop",
+      "memo": "",
+      "createdAt": "2026-07-26T04:29:43.314Z",
+      "id": "1785040183314_cfo9ho",
+      "updatedAt": "2026-07-26T04:29:43.314Z"
+    },
+    {
+      "name": "",
+      "instagramId": "mirai_chikushino",
+      "memo": "",
+      "createdAt": "2026-07-26T04:28:49.073Z",
+      "id": "1785040129073_0vmvxp",
+      "updatedAt": "2026-07-26T04:28:49.073Z"
+    },
+    {
+      "instagramId": "yosapark.wave",
+      "name": "",
+      "createdAt": "2026-07-26T04:28:28.109Z",
+      "memo": "",
+      "id": "1785040108109_sfdt3g",
+      "updatedAt": "2026-07-26T04:28:28.109Z"
+    },
+    {
+      "name": "",
+      "instagramId": "yosapark_flourish",
+      "memo": "",
+      "createdAt": "2026-07-26T04:27:58.048Z",
+      "id": "1785040078048_qqc4ox",
+      "updatedAt": "2026-07-26T04:27:58.048Z"
+    },
+    {
+      "name": "",
+      "instagramId": "yosapark.spica_abiko",
+      "memo": "",
+      "createdAt": "2026-07-26T04:27:29.509Z",
+      "id": "1785040049509_qkvmgd",
+      "updatedAt": "2026-07-26T04:27:29.509Z"
+    },
+    {
+      "name": "",
+      "instagramId": "nanatama2020",
+      "memo": "",
+      "createdAt": "2026-07-26T04:26:34.757Z",
+      "id": "1785039994757_rr619m",
+      "updatedAt": "2026-07-26T04:26:34.757Z"
+    },
+    {
+      "name": "",
+      "instagramId": "quintina__k",
+      "createdAt": "2026-07-26T04:26:19.127Z",
+      "memo": "",
+      "id": "1785039979127_pghnc6",
+      "updatedAt": "2026-07-26T04:26:19.127Z"
+    },
+    {
+      "name": "",
+      "instagramId": "hitoyasumi_630",
+      "memo": "",
+      "createdAt": "2026-07-26T04:25:56.911Z",
+      "id": "1785039956911_14goo0",
+      "updatedAt": "2026-07-26T04:25:56.911Z"
+    },
+    {
+      "instagramId": "tuki0728_tomoko",
+      "name": "",
+      "createdAt": "2026-07-26T04:25:36.593Z",
+      "memo": "",
+      "id": "1785039936593_raz2jy",
+      "updatedAt": "2026-07-26T04:25:36.593Z"
+    },
+    {
+      "name": "",
+      "instagramId": "mimitsubo_ayumi",
+      "memo": "",
+      "createdAt": "2026-07-26T04:25:09.735Z",
+      "id": "1785039909735_avyjf7",
+      "updatedAt": "2026-07-26T04:25:09.735Z"
+    },
+    {
+      "instagramId": "yuzulemon.pet",
+      "name": "",
+      "createdAt": "2026-07-26T04:24:45.570Z",
+      "memo": "",
+      "id": "1785039885570_g03sxu",
+      "updatedAt": "2026-07-26T04:24:45.570Z"
+    },
+    {
+      "instagramId": "rea_clinical_salon",
+      "name": "",
+      "createdAt": "2026-07-26T04:14:23.341Z",
+      "memo": "",
+      "id": "1785039263341_w7ese5",
+      "updatedAt": "2026-07-26T04:14:23.341Z"
+    },
+    {
+      "instagramId": "switch_beauty_",
+      "name": "",
+      "memo": "",
+      "createdAt": "2026-07-26T04:12:08.419Z",
+      "id": "1785039128419_362ts1",
+      "updatedAt": "2026-07-26T04:12:08.419Z"
+    },
+    {
+      "name": "",
+      "instagramId": "yosapak_anju",
+      "memo": "",
+      "createdAt": "2026-07-26T04:11:41.943Z",
+      "id": "1785039101943_yblmv2",
+      "updatedAt": "2026-07-26T04:11:41.943Z"
+    },
+    {
+      "name": "",
+      "instagramId": "asa_to_uta",
+      "memo": "",
+      "createdAt": "2026-07-26T04:11:29.410Z",
+      "id": "1785039089410_b5f81t",
+      "updatedAt": "2026-07-26T04:11:29.410Z"
+    },
+    {
+      "instagramId": "hogushidokoro_nook",
+      "name": "",
+      "memo": "",
+      "createdAt": "2026-07-26T04:10:29.955Z",
+      "id": "1785039029955_9n1wgq",
+      "updatedAt": "2026-07-26T04:10:29.955Z"
+    },
+    {
+      "name": "",
+      "instagramId": "chico.beauty.and.spa",
+      "memo": "",
+      "createdAt": "2026-07-26T04:10:15.473Z",
+      "id": "1785039015473_t8xgm9",
+      "updatedAt": "2026-07-26T04:10:15.473Z"
+    },
+    {
+      "name": "",
+      "instagramId": "noahpilates_",
+      "createdAt": "2026-07-26T04:09:46.147Z",
+      "memo": "",
+      "id": "1785038986147_0tqqza",
+      "updatedAt": "2026-07-26T04:09:46.147Z"
+    },
+    {
+      "instagramId": "salon.dio",
+      "name": "",
+      "createdAt": "2026-07-26T04:08:14.066Z",
+      "memo": "",
+      "id": "1785038894066_qen7ae",
+      "updatedAt": "2026-07-26T04:08:14.066Z"
+    },
+    {
+      "instagramId": "reluxbeatstation",
+      "name": "",
+      "createdAt": "2026-07-26T04:07:31.682Z",
+      "memo": "",
+      "id": "1785038851682_1r4j3j",
+      "updatedAt": "2026-07-26T04:07:31.682Z"
+    },
+    {
+      "name": "",
+      "instagramId": "kizuki64",
+      "memo": "",
+      "createdAt": "2026-07-26T04:05:47.585Z",
+      "id": "1785038747585_ef4i59",
+      "updatedAt": "2026-07-26T04:05:47.585Z"
+    },
+    {
+      "instagramId": "magical_herbtea_39",
+      "name": "",
+      "memo": "",
+      "createdAt": "2026-07-26T04:05:30.298Z",
+      "id": "1785038730298_ypq1fe",
+      "updatedAt": "2026-07-26T04:05:30.298Z"
+    },
+    {
+      "name": "",
+      "instagramId": "hari_rion",
+      "createdAt": "2026-07-26T04:05:06.014Z",
+      "memo": "",
+      "id": "1785038706014_12fh2f",
+      "updatedAt": "2026-07-26T04:05:06.014Z"
+    },
+    {
+      "instagramId": "facial_lumora_akashi",
+      "name": "",
+      "createdAt": "2026-07-26T04:04:47.419Z",
+      "memo": "",
+      "id": "1785038687419_b2jgwr",
+      "updatedAt": "2026-07-26T04:04:47.419Z"
+    },
+    {
+      "instagramId": "relaxationsalon_leaf",
+      "name": "",
+      "memo": "",
+      "createdAt": "2026-07-26T04:04:29.223Z",
+      "id": "1785038669223_4tcmis",
+      "updatedAt": "2026-07-26T04:04:29.223Z"
+    },
+    {
+      "instagramId": "narumi_shibata",
+      "name": "",
+      "memo": "",
+      "createdAt": "2026-07-26T04:04:14.282Z",
+      "id": "1785038654282_dfbrze",
+      "updatedAt": "2026-07-26T04:04:14.282Z"
+    },
+    {
+      "instagramId": "halu_nakamozu",
+      "name": "",
+      "memo": "",
+      "createdAt": "2026-07-23T22:27:02.963Z",
+      "id": "1784845622963_cnab78",
+      "updatedAt": "2026-07-23T22:27:02.963Z"
+    },
+    {
+      "name": "",
+      "instagramId": "leprea.salon",
+      "memo": "",
+      "createdAt": "2026-07-23T22:26:41.152Z",
+      "id": "1784845601152_2mrosn",
+      "updatedAt": "2026-07-23T22:26:41.152Z"
+    },
+    {
+      "name": "",
+      "instagramId": "albi.fukuoka",
+      "memo": "",
+      "createdAt": "2026-07-23T22:26:09.306Z",
+      "id": "1784845569306_j7squ0",
+      "updatedAt": "2026-07-23T22:26:09.306Z"
+    },
+    {
+      "name": "",
+      "instagramId": "salon_rire",
+      "createdAt": "2026-07-23T22:25:40.550Z",
+      "memo": "",
+      "id": "1784845540550_cqlqri",
+      "updatedAt": "2026-07-23T22:25:40.550Z"
+    },
+    {
+      "instagramId": "domani_cupping_yomogi",
+      "name": "",
+      "memo": "",
+      "createdAt": "2026-07-23T22:25:28.317Z",
+      "id": "1784845528317_o6oimr",
+      "updatedAt": "2026-07-23T22:25:28.317Z"
+    },
+    {
+      "name": "",
+      "instagramId": "i.viora_life",
+      "memo": "",
+      "createdAt": "2026-07-23T22:25:16.347Z",
+      "id": "1784845516347_w1l34s",
+      "updatedAt": "2026-07-23T22:25:16.347Z"
+    },
+    {
+      "instagramId": "aromahealing.kanon",
+      "name": "",
+      "createdAt": "2026-07-23T22:24:54.559Z",
+      "memo": "",
+      "id": "1784845494559_o5edps",
+      "updatedAt": "2026-07-23T22:24:54.559Z"
+    },
+    {
+      "name": "",
+      "instagramId": "kaju.beautysalon",
+      "memo": "",
+      "createdAt": "2026-07-23T22:24:41.156Z",
+      "id": "1784845481156_o370x3",
+      "updatedAt": "2026-07-23T22:24:41.156Z"
+    },
+    {
+      "name": "",
+      "instagramId": "ti_amo0513",
+      "createdAt": "2026-07-23T22:24:26.846Z",
+      "memo": "",
+      "id": "1784845466846_rzkvcp",
+      "updatedAt": "2026-07-23T22:24:26.846Z"
+    },
+    {
+      "instagramId": "lumisel046__okinawa",
+      "name": "",
+      "createdAt": "2026-07-23T22:24:16.157Z",
+      "memo": "",
+      "id": "1784845456157_ygw49j",
+      "updatedAt": "2026-07-23T22:24:16.157Z"
+    },
+    {
+      "name": "",
+      "instagramId": "nora.relaxation",
+      "memo": "",
+      "createdAt": "2026-07-23T22:24:01.952Z",
+      "id": "1784845441952_hxmrho",
+      "updatedAt": "2026-07-23T22:24:01.952Z"
+    },
+    {
+      "instagramId": "chokatsu_miyuki",
+      "name": "",
+      "memo": "",
+      "createdAt": "2026-07-23T22:23:44.303Z",
+      "id": "1784845424303_4giwq7",
+      "updatedAt": "2026-07-23T22:23:44.303Z"
+    },
+    {
+      "name": "",
+      "instagramId": "clinicalsalon_serein",
+      "memo": "",
+      "createdAt": "2026-07-23T22:23:32.461Z",
+      "id": "1784845412461_94fvik",
+      "updatedAt": "2026-07-23T22:23:32.461Z"
+    },
+    {
+      "instagramId": "makana_anela_aya",
+      "name": "",
+      "createdAt": "2026-07-23T22:23:15.120Z",
+      "memo": "",
+      "id": "1784845395120_fsyown",
+      "updatedAt": "2026-07-23T22:23:15.120Z"
+    },
+    {
+      "name": "",
+      "instagramId": "creafelice_honmachi",
+      "createdAt": "2026-07-23T22:23:02.962Z",
+      "memo": "",
+      "id": "1784845382962_61xx6b",
+      "updatedAt": "2026-07-23T22:23:02.962Z"
+    },
+    {
+      "instagramId": "aomori_fujisaki_fujinkasalon",
+      "name": "",
+      "memo": "",
+      "createdAt": "2026-07-23T22:22:47.549Z",
+      "id": "1784845367549_lsbaof",
+      "updatedAt": "2026-07-23T22:22:47.549Z"
+    },
+    {
+      "name": "",
+      "instagramId": "hinano_salon",
+      "memo": "",
+      "createdAt": "2026-07-23T22:22:32.203Z",
+      "id": "1784845352203_dupyep",
+      "updatedAt": "2026-07-23T22:22:32.203Z"
+    },
+    {
+      "instagramId": "share_ig2011",
+      "name": "",
+      "memo": "",
+      "createdAt": "2026-07-23T22:22:05.855Z",
+      "id": "1784845325855_rum5qy",
+      "updatedAt": "2026-07-23T22:22:05.855Z"
+    },
+    {
+      "instagramId": "pinktopaz07",
+      "name": "",
+      "memo": "",
+      "createdAt": "2026-07-23T22:21:53.749Z",
+      "id": "1784845313749_okkvua",
+      "updatedAt": "2026-07-23T22:21:53.749Z"
+    },
+    {
+      "instagramId": "aria__dryheadspa",
+      "name": "",
+      "createdAt": "2026-07-23T22:21:35.089Z",
+      "memo": "",
+      "id": "1784845295089_yjz025",
+      "updatedAt": "2026-07-23T22:21:35.089Z"
+    },
+    {
+      "name": "",
+      "instagramId": "tonio.foot_k",
+      "createdAt": "2026-07-23T22:21:20.846Z",
+      "memo": "",
+      "id": "1784845280846_vrfuh3",
+      "updatedAt": "2026-07-23T22:21:20.846Z"
+    },
+    {
+      "instagramId": "cieri.salon",
+      "name": "",
+      "memo": "",
+      "createdAt": "2026-07-23T22:20:55.382Z",
+      "id": "1784845255382_fvzx09",
+      "updatedAt": "2026-07-23T22:20:55.382Z"
+    },
+    {
+      "instagramId": "wakana_lana_therapist",
+      "name": "",
+      "memo": "",
+      "createdAt": "2026-07-23T22:20:43.247Z",
+      "id": "1784845243247_yjjbt1",
+      "updatedAt": "2026-07-23T22:20:43.247Z"
+    },
+    {
+      "name": "",
+      "instagramId": "tsukuyomi.este",
+      "memo": "",
+      "createdAt": "2026-07-23T22:20:28.996Z",
+      "id": "1784845228996_z3fspf",
+      "updatedAt": "2026-07-23T22:20:28.996Z"
+    },
+    {
+      "name": "",
+      "instagramId": "totalbeauty_magome",
+      "memo": "",
+      "createdAt": "2026-07-23T22:19:47.078Z",
+      "id": "1784845187078_0wc4o3",
+      "updatedAt": "2026-07-23T22:19:47.078Z"
+    },
+    {
+      "name": "",
+      "instagramId": "satomi.korugi",
+      "memo": "",
+      "createdAt": "2026-07-23T22:18:11.389Z",
+      "id": "1784845091389_q36lgt",
+      "updatedAt": "2026-07-23T22:18:11.389Z"
+    },
+    {
+      "instagramId": "yama.guchi07120712",
+      "name": "",
+      "memo": "",
+      "createdAt": "2026-07-23T22:17:57.716Z",
+      "id": "1784845077716_9g4o9j",
+      "updatedAt": "2026-07-23T22:17:57.716Z"
+    },
+    {
+      "instagramId": "relaxation_umemoto",
+      "name": "",
+      "createdAt": "2026-07-23T22:16:52.292Z",
+      "memo": "",
+      "id": "1784845012292_il3o90",
+      "updatedAt": "2026-07-23T22:16:52.292Z"
+    },
+    {
+      "instagramId": "hitoyasumi117",
+      "name": "",
+      "memo": "",
+      "createdAt": "2026-07-23T22:16:34.816Z",
+      "id": "1784844994816_21a1cy",
+      "updatedAt": "2026-07-23T22:16:34.816Z"
+    },
+    {
+      "instagramId": "mo.san634",
+      "name": "",
+      "createdAt": "2026-07-23T22:16:15.818Z",
+      "memo": "",
+      "id": "1784844975818_iht6fi",
+      "updatedAt": "2026-07-23T22:16:15.818Z"
+    },
+    {
+      "name": "",
+      "instagramId": "leaf0609_1006_0701",
+      "createdAt": "2026-07-23T22:15:05.323Z",
+      "memo": "",
+      "id": "1784844905323_jfiwwp",
+      "updatedAt": "2026-07-23T22:15:05.323Z"
+    },
+    {
+      "instagramId": "nanami_foot.kokochi",
+      "name": "",
+      "memo": "",
+      "createdAt": "2026-07-23T22:14:53.742Z",
+      "id": "1784844893742_l3jo50",
+      "updatedAt": "2026-07-23T22:14:53.742Z"
+    },
+    {
+      "name": "",
+      "instagramId": "beauty.salon_cherie",
+      "memo": "",
+      "createdAt": "2026-07-23T22:14:39.702Z",
+      "id": "1784844879702_f9fpeb",
+      "updatedAt": "2026-07-23T22:14:39.702Z"
+    },
+    {
+      "instagramId": "salon_a_dot_ginza",
+      "name": "",
+      "memo": "",
+      "createdAt": "2026-07-23T22:14:23.554Z",
+      "id": "1784844863554_2z1clx",
+      "updatedAt": "2026-07-23T22:14:23.554Z"
+    },
+    {
+      "instagramId": "en_salon.takiuchi",
+      "name": "",
+      "memo": "",
+      "createdAt": "2026-07-23T22:14:11.268Z",
+      "id": "1784844851268_z5j2r9",
+      "updatedAt": "2026-07-23T22:14:11.268Z"
+    },
+    {
+      "name": "",
+      "instagramId": "hitomi_fofo_keana",
+      "memo": "",
+      "createdAt": "2026-07-23T22:13:02.724Z",
+      "id": "1784844782724_i0y2v9",
+      "updatedAt": "2026-07-23T22:13:02.724Z"
+    },
+    {
+      "instagramId": "relaxationsalon_lien03",
+      "name": "",
+      "memo": "",
+      "createdAt": "2026-07-23T22:12:50.213Z",
+      "id": "1784844770213_cumw2x",
+      "updatedAt": "2026-07-23T22:12:50.213Z"
+    },
+    {
+      "instagramId": "wau_yomogisalon",
+      "name": "",
+      "memo": "",
+      "createdAt": "2026-07-23T22:12:36.024Z",
+      "id": "1784844756024_0wsned",
+      "updatedAt": "2026-07-23T22:12:36.024Z"
+    },
+    {
+      "instagramId": "lupo_salon.sei.naris",
+      "name": "",
+      "createdAt": "2026-07-23T22:12:23.902Z",
+      "memo": "",
+      "id": "1784844743902_t9igz0",
+      "updatedAt": "2026-07-23T22:12:23.902Z"
+    },
+    {
+      "name": "",
+      "instagramId": "nailroom_cuore",
+      "createdAt": "2026-07-23T22:12:11.234Z",
+      "memo": "",
+      "id": "1784844731234_woz5ug",
+      "updatedAt": "2026-07-23T22:12:11.234Z"
+    },
+    {
+      "instagramId": "mommy_.nail",
+      "name": "",
+      "createdAt": "2026-07-23T22:11:58.274Z",
+      "memo": "",
+      "id": "1784844718274_cfxwti",
+      "updatedAt": "2026-07-23T22:11:58.274Z"
+    },
+    {
+      "instagramId": "sendaiwellnesscare.maki",
+      "name": "",
+      "memo": "",
+      "createdAt": "2026-07-23T22:11:48.260Z",
+      "id": "1784844708260_z2qhok",
+      "updatedAt": "2026-07-23T22:11:48.260Z"
+    },
+    {
+      "name": "",
+      "instagramId": "4irielife.24",
+      "memo": "",
+      "createdAt": "2026-07-23T22:11:29.953Z",
+      "id": "1784844689953_qzo4qq",
+      "updatedAt": "2026-07-23T22:11:29.953Z"
+    },
+    {
+      "name": "",
+      "instagramId": "asiestahirakata_aiko",
+      "memo": "",
+      "createdAt": "2026-07-23T22:11:18.403Z",
+      "id": "1784844678403_qdb1u5",
+      "updatedAt": "2026-07-23T22:11:18.403Z"
+    },
+    {
+      "name": "",
+      "instagramId": "mignon_kobe",
+      "memo": "",
+      "createdAt": "2026-07-23T22:11:06.702Z",
+      "id": "1784844666702_so3j6n",
+      "updatedAt": "2026-07-23T22:11:06.702Z"
+    },
+    {
+      "instagramId": "now_and_flow",
+      "name": "",
+      "createdAt": "2026-07-23T22:09:21.946Z",
+      "memo": "",
+      "id": "1784844561946_xui4nh",
+      "updatedAt": "2026-07-23T22:09:21.946Z"
+    },
+    {
+      "instagramId": "kozusalon_sunnyspot",
+      "name": "",
+      "createdAt": "2026-07-23T22:08:33.381Z",
+      "memo": "",
+      "id": "1784844513381_v4mdsv",
+      "updatedAt": "2026-07-23T22:08:33.381Z"
+    },
+    {
+      "name": "",
+      "instagramId": "facial_salon_luminous",
+      "createdAt": "2026-07-23T22:08:16.580Z",
+      "memo": "",
+      "id": "1784844496580_j6on4d",
+      "updatedAt": "2026-07-23T22:08:16.580Z"
+    },
+    {
+      "name": "",
+      "instagramId": "lymph_salon_maco",
+      "memo": "",
+      "createdAt": "2026-07-23T22:08:03.170Z",
+      "id": "1784844483170_jm22jb",
+      "updatedAt": "2026-07-23T22:08:03.170Z"
+    },
+    {
+      "instagramId": "terumy_terumy",
+      "name": "",
+      "memo": "",
+      "createdAt": "2026-07-23T22:07:48.042Z",
+      "id": "1784844468042_f3vp33",
+      "updatedAt": "2026-07-23T22:07:48.042Z"
+    },
+    {
+      "instagramId": "prima.relaxation",
+      "name": "",
+      "memo": "",
+      "createdAt": "2026-07-23T22:07:23.028Z",
+      "id": "1784844443028_5vyyy6",
+      "updatedAt": "2026-07-23T22:07:23.028Z"
+    },
+    {
+      "name": "",
+      "instagramId": "defi_asai",
+      "createdAt": "2026-07-23T22:07:01.090Z",
+      "memo": "",
+      "id": "1784844421090_zv5bcp",
+      "updatedAt": "2026-07-23T22:07:01.090Z"
+    },
+    {
+      "instagramId": "soratokaze_kaisuionnestu_rymph",
+      "name": "",
+      "createdAt": "2026-07-23T22:06:28.157Z",
+      "memo": "",
+      "id": "1784844388157_5v2q2j",
+      "updatedAt": "2026-07-23T22:06:28.157Z"
+    },
+    {
+      "name": "",
+      "instagramId": "maiko_muku_keana",
+      "memo": "",
+      "createdAt": "2026-07-23T22:05:43.507Z",
+      "id": "1784844343507_bsq5hr",
+      "updatedAt": "2026-07-23T22:05:43.507Z"
+    },
+    {
+      "name": "",
+      "instagramId": "mebuki_yukari",
+      "memo": "",
+      "createdAt": "2026-07-23T22:05:32.821Z",
+      "id": "1784844332821_l4le95",
+      "updatedAt": "2026-07-23T22:05:32.821Z"
+    },
+    {
+      "instagramId": "white.s.mjs.07",
+      "name": "",
+      "memo": "",
+      "createdAt": "2026-07-23T22:05:18.457Z",
+      "id": "1784844318457_2tjhe1",
+      "updatedAt": "2026-07-23T22:05:18.457Z"
+    },
+    {
+      "instagramId": "smilecharge_mari",
+      "name": "",
+      "memo": "",
+      "createdAt": "2026-07-23T22:05:06.764Z",
+      "id": "1784844306764_z9vuqg",
+      "updatedAt": "2026-07-23T22:05:06.764Z"
+    },
+    {
+      "instagramId": "lanirasa_therapy_school",
+      "name": "",
+      "memo": "",
+      "createdAt": "2026-07-23T22:04:51.179Z",
+      "id": "1784844291179_yh9bsh",
+      "updatedAt": "2026-07-23T22:04:51.179Z"
+    },
+    {
+      "instagramId": "lupinus_relaxation0613",
+      "name": "",
+      "memo": "",
+      "createdAt": "2026-07-23T20:56:59.947Z",
+      "id": "1784840219947_7vf5qd",
+      "updatedAt": "2026-07-23T20:56:59.947Z"
+    },
+    {
+      "name": "",
+      "instagramId": "rikka.73",
+      "createdAt": "2026-07-23T20:56:30.891Z",
+      "memo": "",
+      "id": "1784840190891_fi0bop",
+      "updatedAt": "2026-07-23T20:56:30.891Z"
+    },
+    {
+      "name": "",
+      "instagramId": "hiyori.takamatsu",
+      "createdAt": "2026-07-23T20:56:16.827Z",
+      "memo": "",
+      "id": "1784840176827_rom49r",
+      "updatedAt": "2026-07-23T20:56:16.827Z"
+    },
+    {
+      "instagramId": "nico_smile_iwk",
+      "name": "",
+      "memo": "",
+      "createdAt": "2026-07-23T20:56:05.704Z",
+      "id": "1784840165704_askvb0",
+      "updatedAt": "2026-07-23T20:56:05.704Z"
+    },
+    {
+      "name": "",
+      "instagramId": "andmilulu",
+      "memo": "",
+      "createdAt": "2026-07-23T20:55:53.569Z",
+      "id": "1784840153569_y920sx",
+      "updatedAt": "2026-07-23T20:55:53.569Z"
+    },
+    {
+      "name": "",
+      "instagramId": "medikamon",
+      "createdAt": "2026-07-23T20:55:39.716Z",
+      "memo": "",
+      "id": "1784840139716_q12qrf",
+      "updatedAt": "2026-07-23T20:55:39.716Z"
+    },
+    {
+      "instagramId": "meguribi_biyouseitai",
+      "name": "",
+      "createdAt": "2026-07-23T20:55:28.848Z",
+      "memo": "",
+      "id": "1784840128848_45wsdf",
+      "updatedAt": "2026-07-23T20:55:28.848Z"
+    },
+    {
+      "name": "",
+      "instagramId": "yoo.n.yoo.n",
+      "createdAt": "2026-07-23T20:55:18.160Z",
+      "memo": "",
+      "id": "1784840118160_5txr0z",
+      "updatedAt": "2026-07-23T20:55:18.160Z"
+    },
+    {
+      "instagramId": "irodori_0310",
+      "name": "",
+      "memo": "",
+      "createdAt": "2026-07-23T20:55:07.772Z",
+      "id": "1784840107772_i92y69",
+      "updatedAt": "2026-07-23T20:55:07.772Z"
+    },
+    {
+      "instagramId": "farmbran2020",
+      "name": "",
+      "createdAt": "2026-07-23T20:54:55.839Z",
+      "memo": "",
+      "id": "1784840095839_70xqk4",
+      "updatedAt": "2026-07-23T20:54:55.839Z"
+    },
+    {
+      "instagramId": "yosaparkmysa2",
+      "name": "",
+      "memo": "",
+      "createdAt": "2026-07-23T20:54:42.429Z",
+      "id": "1784840082429_9udasw",
+      "updatedAt": "2026-07-23T20:54:42.429Z"
+    },
+    {
+      "name": "",
+      "instagramId": "iyasuto20230321",
+      "memo": "",
+      "createdAt": "2026-07-23T20:54:31.381Z",
+      "id": "1784840071381_z7bbdw",
+      "updatedAt": "2026-07-23T20:54:31.381Z"
+    },
+    {
+      "name": "",
+      "instagramId": "beauty_3ense_22_06",
+      "memo": "",
+      "createdAt": "2026-07-23T20:53:51.863Z",
+      "id": "1784840031863_r1bfxg",
+      "updatedAt": "2026-07-23T20:53:51.863Z"
+    },
+    {
+      "instagramId": "maum_caresalon",
+      "name": "",
+      "createdAt": "2026-07-23T20:53:35.527Z",
+      "memo": "",
+      "id": "1784840015527_zn0mvp",
+      "updatedAt": "2026-07-23T20:53:35.527Z"
+    },
+    {
+      "instagramId": "kayua319",
+      "name": "",
+      "memo": "",
+      "createdAt": "2026-07-23T20:53:23.159Z",
+      "id": "1784840003159_8sfe4n",
+      "updatedAt": "2026-07-23T20:53:23.159Z"
+    },
+    {
+      "instagramId": "nari686868",
+      "name": "",
+      "memo": "",
+      "createdAt": "2026-07-23T20:51:55.391Z",
+      "id": "1784839915391_8kqf2y",
+      "updatedAt": "2026-07-23T20:51:55.391Z"
+    },
+    {
+      "instagramId": "yomogi_san_",
+      "name": "",
+      "createdAt": "2026-07-23T20:51:40.166Z",
+      "memo": "",
+      "id": "1784839900166_wg7cxf",
+      "updatedAt": "2026-07-23T20:51:40.166Z"
+    },
+    {
+      "name": "",
+      "instagramId": "headspa_chiyu",
+      "createdAt": "2026-07-23T20:51:19.067Z",
+      "memo": "",
+      "id": "1784839879067_ks4gc0",
+      "updatedAt": "2026-07-23T20:51:19.067Z"
+    },
+    {
+      "instagramId": "srsalonnico",
+      "name": "",
+      "createdAt": "2026-07-23T20:51:04.187Z",
+      "memo": "",
+      "id": "1784839864187_hl5lih",
+      "updatedAt": "2026-07-23T20:51:04.187Z"
+    },
+    {
+      "instagramId": "sui_ayako_aichi",
+      "name": "",
+      "memo": "",
+      "createdAt": "2026-07-23T20:49:01.520Z",
+      "id": "1784839741520_hrm6ts",
+      "updatedAt": "2026-07-23T20:49:01.520Z"
+    },
+    {
+      "instagramId": "yomoginu_steam",
+      "name": "",
+      "memo": "",
+      "createdAt": "2026-07-23T20:48:48.395Z",
+      "id": "1784839728395_8ebd25",
+      "updatedAt": "2026-07-23T20:48:48.395Z"
+    },
+    {
+      "instagramId": "charme_sanso_esthetic",
+      "name": "",
+      "memo": "",
+      "createdAt": "2026-07-23T20:48:37.834Z",
+      "id": "1784839717834_tkx5fu",
+      "updatedAt": "2026-07-23T20:48:37.834Z"
+    },
+    {
+      "name": "",
+      "instagramId": "hana10311229",
+      "memo": "",
+      "createdAt": "2026-07-23T20:48:23.442Z",
+      "id": "1784839703442_lr166e",
+      "updatedAt": "2026-07-23T20:48:23.442Z"
+    },
+    {
+      "name": "",
+      "instagramId": "bellefemme_sendai",
+      "createdAt": "2026-07-23T20:48:08.479Z",
+      "memo": "",
+      "id": "1784839688479_o3ktca",
+      "updatedAt": "2026-07-23T20:48:08.479Z"
+    },
+    {
+      "name": "",
+      "instagramId": "enjuru_motomachi",
+      "createdAt": "2026-07-23T20:46:47.836Z",
+      "memo": "",
+      "id": "1784839607836_ryuvp8",
+      "updatedAt": "2026-07-23T20:46:47.836Z"
+    },
+    {
+      "instagramId": "reborn_de_salon",
+      "name": "",
+      "memo": "",
+      "createdAt": "2026-07-23T20:46:33.518Z",
+      "id": "1784839593518_gnlsmo",
+      "updatedAt": "2026-07-23T20:46:33.518Z"
+    },
+    {
+      "instagramId": "lono_by_a_little",
+      "name": "",
+      "memo": "",
+      "createdAt": "2026-07-23T20:46:21.323Z",
+      "id": "1784839581323_bysace",
+      "updatedAt": "2026-07-23T20:46:21.323Z"
+    },
+    {
+      "name": "",
+      "instagramId": "salon.de_n",
+      "createdAt": "2026-07-23T20:45:49.680Z",
+      "memo": "",
+      "id": "1784839549680_esf9e0",
+      "updatedAt": "2026-07-23T20:45:49.680Z"
+    },
+    {
+      "instagramId": "re_anchor_gion",
+      "name": "",
+      "createdAt": "2026-07-23T20:45:19.835Z",
+      "memo": "",
+      "id": "1784839519835_tffink",
+      "updatedAt": "2026-07-23T20:45:19.835Z"
+    },
+    {
+      "name": "",
+      "instagramId": "pichirozu62",
+      "createdAt": "2026-07-23T20:42:22.327Z",
+      "memo": "",
+      "id": "1784839342327_uf1sjw",
+      "updatedAt": "2026-07-23T20:42:22.327Z"
+    },
+    {
+      "instagramId": "oreille_salon",
+      "name": "",
+      "memo": "",
+      "createdAt": "2026-07-23T20:42:00.291Z",
+      "id": "1784839320291_q2je4h",
+      "updatedAt": "2026-07-23T20:42:00.291Z"
+    },
+    {
+      "instagramId": "lien_brow_atelier",
+      "name": "",
+      "memo": "",
+      "createdAt": "2026-07-23T20:41:46.640Z",
+      "id": "1784839306640_wcc7k2",
+      "updatedAt": "2026-07-23T20:41:46.640Z"
+    },
+    {
+      "instagramId": "salon_kalon_yomogi",
+      "name": "",
+      "memo": "",
+      "createdAt": "2026-07-23T20:41:33.147Z",
+      "id": "1784839293147_jl93d2",
+      "updatedAt": "2026-07-23T20:41:33.147Z"
+    },
+    {
+      "name": "",
+      "instagramId": "coco_seitai_sapporo",
+      "memo": "",
+      "createdAt": "2026-07-23T20:41:14.374Z",
+      "id": "1784839274375_jw4iss",
+      "updatedAt": "2026-07-23T20:41:14.374Z"
+    },
+    {
+      "name": "",
+      "instagramId": "haru_privatesalon_",
+      "createdAt": "2026-07-23T20:40:58.586Z",
+      "memo": "",
+      "id": "1784839258586_51fpzj",
+      "updatedAt": "2026-07-23T20:40:58.586Z"
+    },
+    {
+      "name": "",
+      "instagramId": "gorilla_seitai",
+      "createdAt": "2026-07-23T20:40:01.899Z",
+      "memo": "",
+      "id": "1784839201899_kzptur",
+      "updatedAt": "2026-07-23T20:40:01.899Z"
+    },
+    {
+      "instagramId": "tokyo.fujinka",
+      "name": "",
+      "memo": "",
+      "createdAt": "2026-07-23T20:38:46.912Z",
+      "id": "1784839126912_1am1ua",
+      "updatedAt": "2026-07-23T20:38:46.912Z"
+    },
+    {
+      "name": "",
+      "instagramId": "footreflenico",
+      "memo": "",
+      "createdAt": "2026-07-23T20:38:21.156Z",
+      "id": "1784839101156_sb3ayx",
+      "updatedAt": "2026-07-23T20:38:21.156Z"
+    }
+  ],
+  "salesLogs": [
+    {
+      "date": "2026-07-30",
+      "createdAt": "2026-07-29T22:34:28.508Z",
+      "notes": "",
+      "channel": "X",
+      "count": 1,
+      "id": "1785364468508_hz5gjy",
+      "type": "dm"
+    },
+    {
+      "date": "2026-07-27",
+      "createdAt": "2026-07-27T01:59:54.480Z",
+      "notes": "",
+      "channel": "X",
+      "count": 7,
+      "id": "1785117594480_b30mla",
+      "type": "dm"
+    },
+    {
+      "date": "2026-07-18",
+      "createdAt": "2026-07-17T22:53:32.847Z",
+      "notes": "",
+      "channel": "X",
+      "count": 9,
+      "id": "1784328812846_z47it3",
+      "type": "dm"
+    },
+    {
+      "date": "2026-07-17",
+      "createdAt": "2026-07-16T22:49:29.722Z",
+      "notes": "",
+      "count": 9,
+      "channel": "X",
+      "id": "1784242169722_crnmp1",
+      "type": "dm"
+    },
+    {
+      "date": "2026-07-14",
+      "createdAt": "2026-07-13T22:40:31.348Z",
+      "notes": "",
+      "channel": "X",
+      "count": 5,
+      "id": "1783982431348_hmqx8t",
+      "type": "dm"
+    },
+    {
+      "date": "2026-07-12",
+      "createdAt": "2026-07-12T10:34:58.713Z",
+      "notes": "",
+      "count": 11,
+      "channel": "X",
+      "id": "1783852498713_wnbjo2",
+      "type": "dm"
+    },
+    {
+      "date": "2026-07-11",
+      "createdAt": "2026-07-11T00:19:48.464Z",
+      "notes": "",
+      "count": 26,
+      "channel": "X",
+      "id": "1783729188464_z0zorg",
+      "type": "dm"
+    },
+    {
+      "date": "2026-07-10",
+      "createdAt": "2026-07-09T22:41:30.036Z",
+      "notes": "",
+      "count": 4,
+      "channel": "X",
+      "id": "1783636890036_sv9pkg",
+      "type": "dm"
+    },
+    {
+      "date": "2026-07-09",
+      "createdAt": "2026-07-09T08:24:36.524Z",
+      "notes": "",
+      "count": 15,
+      "channel": "X",
+      "id": "1783585476524_s8xfx4",
+      "type": "dm"
+    },
+    {
+      "date": "2026-07-07",
+      "createdAt": "2026-07-07T03:39:26.086Z",
+      "notes": "",
+      "count": 7,
+      "channel": "X",
+      "id": "1783395566086_ectpaj",
+      "type": "dm"
+    },
+    {
+      "date": "2026-07-05",
+      "createdAt": "2026-07-04T23:42:12.407Z",
+      "notes": "",
+      "count": 4,
+      "channel": "X",
+      "id": "1783208532407_j1dsx4",
+      "type": "dm"
+    },
+    {
+      "date": "2026-07-04",
+      "createdAt": "2026-07-04T05:53:18.652Z",
+      "notes": "",
+      "channel": "X",
+      "count": 12,
+      "id": "1783144398652_nic359",
+      "type": "dm"
+    },
+    {
+      "date": "2026-06-30",
+      "createdAt": "2026-06-30T03:51:30.766Z",
+      "notes": "",
+      "channel": "X",
+      "count": 8,
+      "id": "1782791490766_1s6yhy",
+      "type": "dm"
+    },
+    {
+      "date": "2026-06-29",
+      "createdAt": "2026-06-29T11:02:24.768Z",
+      "notes": "",
+      "channel": "X",
+      "count": 8,
+      "id": "1782730944768_kx5gzq",
+      "type": "dm"
+    }
+  ],
+  "tasks": [
+    {
+      "id": "qt-dm",
+      "text": "DM 10件送信",
+      "category": "sales",
+      "phaseId": "p1",
+      "done": false,
+      "doneAt": null,
+      "createdAt": "2026-05-23T03:31:14.210Z"
+    },
+    {
+      "id": "qt-portfolio",
+      "text": "実績ページを更新",
+      "category": "delivery",
+      "phaseId": "p1",
+      "done": false,
+      "doneAt": null,
+      "createdAt": "2026-05-23T03:31:14.210Z"
+    },
+    {
+      "id": "qt-report",
+      "text": "継続クライアントへ月次レポート",
+      "category": "retention",
+      "phaseId": "p2",
+      "done": false,
+      "doneAt": null,
+      "createdAt": "2026-05-23T03:31:14.210Z"
+    },
+    {
+      "id": "qt-proposal",
+      "text": "15万円プラン提案書を送付",
+      "category": "sales",
+      "phaseId": "p2",
+      "done": false,
+      "doneAt": null,
+      "createdAt": "2026-05-23T03:31:14.210Z"
+    },
+    {
+      "id": "qt-product",
+      "text": "Exit 200M 開発 2時間",
+      "category": "product",
+      "phaseId": "p4",
+      "done": false,
+      "doneAt": null,
+      "createdAt": "2026-05-23T03:31:14.210Z"
+    }
+  ],
+  "customTasks": [],
+  "notes": [],
+  "journal": [],
+  "trash": [
+    {
+      "item": {
+        "date": "2026-06-25",
+        "createdAt": "2026-06-25T08:05:11.457Z",
+        "notes": "",
+        "count": 14,
+        "channel": "X",
+        "id": "1782374711457_zvy0mk",
+        "type": "dm"
+      },
+      "deletedAt": "2026-06-29T07:38:49.703Z",
+      "label": "2026-06-25 DM 14件",
+      "trashId": "1782718729703_lrx55s",
+      "entityType": "salesLog"
+    },
+    {
+      "item": {
+        "date": "2026-06-26",
+        "createdAt": "2026-06-25T22:54:56.537Z",
+        "notes": "",
+        "channel": "X",
+        "count": 6,
+        "id": "1782428096537_9gvyt2",
+        "type": "dm"
+      },
+      "deletedAt": "2026-06-29T07:38:49.200Z",
+      "trashId": "1782718729200_jo6vg0",
+      "label": "2026-06-26 DM 6件",
+      "entityType": "salesLog"
+    },
+    {
+      "item": {
+        "date": "2026-06-27",
+        "createdAt": "2026-06-27T00:08:46.330Z",
+        "notes": "",
+        "channel": "X",
+        "count": 17,
+        "id": "1782518926330_j9hivk",
+        "type": "dm"
+      },
+      "deletedAt": "2026-06-29T07:38:48.164Z",
+      "trashId": "1782718728164_ds2o8m",
+      "label": "2026-06-27 DM 17件",
+      "entityType": "salesLog"
+    },
+    {
+      "deletedAt": "2026-06-29T07:38:48.033Z",
+      "item": {
+        "date": "2026-06-28",
+        "createdAt": "2026-06-27T20:57:12.313Z",
+        "notes": "",
+        "count": 15,
+        "channel": "X",
+        "id": "1782593832313_38q8bd",
+        "type": "dm"
+      },
+      "trashId": "1782718728033_h4s5hv",
+      "label": "2026-06-28 DM 15件",
+      "entityType": "salesLog"
+    },
+    {
+      "deletedAt": "2026-06-21T11:40:01.251Z",
+      "item": {
+        "testimonial": "",
+        "recurringFee": 0,
+        "phaseId": "p1",
+        "name": "SHOI│元営業の視点でつくるデザイナー",
+        "projectFee": 0,
+        "memo": "コーディング案件候補",
+        "id": "1781522254240_i9ew35",
+        "updatedAt": "2026-06-15T11:17:34.241Z",
+        "status": "lead"
+      },
+      "label": "SHOI│元営業の視点でつくるデザイナー",
+      "trashId": "1782042001251_u9y9hb",
+      "entityType": "client"
+    },
+    {
+      "item": {
+        "testimonial": "",
+        "recurringFee": 0,
+        "phaseId": "p1",
+        "name": "大阪天満│仕事で気が張ったままのからだをゆるめるサロン",
+        "memo": "試作品サイト納品済み(返信待ち)",
+        "projectFee": 0,
+        "id": "1781522369481_bqylx8",
+        "updatedAt": "2026-06-15T11:19:29.481Z",
+        "status": "lead"
+      },
+      "deletedAt": "2026-06-21T11:39:58.487Z",
+      "label": "大阪天満│仕事で気が張ったままのからだをゆるめるサロン",
+      "trashId": "1782041998487_nn7228",
+      "entityType": "client"
+    },
+    {
+      "item": {
+        "testimonial": "",
+        "recurringFee": 0,
+        "name": "アンドユー川越店",
+        "phaseId": "p1",
+        "memo": "関係構築1",
+        "projectFee": 0,
+        "id": "1781522632975_u36lxm",
+        "updatedAt": "2026-06-15T11:23:52.976Z",
+        "status": "lead"
+      },
+      "deletedAt": "2026-06-21T11:39:57.649Z",
+      "trashId": "1782041997649_cf3n1m",
+      "label": "アンドユー川越店",
+      "entityType": "client"
+    },
+    {
+      "item": {
+        "testimonial": "",
+        "recurringFee": 0,
+        "name": "バリヘッドスパ＆オイルリラク～きら華～",
+        "phaseId": "p1",
+        "memo": "関係構築1",
+        "projectFee": 0,
+        "id": "1781522688635_u5znl4",
+        "status": "lead",
+        "updatedAt": "2026-06-15T11:24:48.635Z"
+      },
+      "deletedAt": "2026-06-21T11:39:56.136Z",
+      "trashId": "1782041996136_nzhqs5",
+      "label": "バリヘッドスパ＆オイルリラク～きら華～",
+      "entityType": "client"
+    },
+    {
+      "deletedAt": "2026-06-21T10:35:05.633Z",
+      "item": {
+        "date": "2026-06-15",
+        "createdAt": "2026-06-15T04:05:10.470Z",
+        "notes": "",
+        "channel": "X",
+        "count": 6,
+        "id": "1781496310470_hq3h51",
+        "type": "dm"
+      },
+      "trashId": "1782038105633_vp40vl",
+      "label": "2026-06-15 DM 6件",
+      "entityType": "salesLog"
+    },
+    {
+      "item": {
+        "date": "2026-06-16",
+        "createdAt": "2026-06-16T05:34:02.589Z",
+        "notes": "",
+        "channel": "X",
+        "count": 5,
+        "id": "1781588042589_74dra4",
+        "type": "dm"
+      },
+      "deletedAt": "2026-06-21T10:35:05.450Z",
+      "label": "2026-06-16 DM 5件",
+      "trashId": "1782038105450_2oqus2",
+      "entityType": "salesLog"
+    },
+    {
+      "deletedAt": "2026-06-21T10:35:04.033Z",
+      "item": {
+        "date": "2026-06-17",
+        "createdAt": "2026-06-16T22:13:43.997Z",
+        "notes": "",
+        "count": 5,
+        "channel": "X",
+        "id": "1781648023997_rfx9px",
+        "type": "dm"
+      },
+      "label": "2026-06-17 DM 5件",
+      "trashId": "1782038104032_yrholy",
+      "entityType": "salesLog"
+    },
+    {
+      "item": {
+        "date": "2026-06-18",
+        "createdAt": "2026-06-18T13:41:49.787Z",
+        "notes": "",
+        "channel": "X",
+        "count": 4,
+        "id": "1781790109787_qww3lc",
+        "type": "dm"
+      },
+      "deletedAt": "2026-06-21T10:35:03.866Z",
+      "label": "2026-06-18 DM 4件",
+      "trashId": "1782038103866_4ny28o",
+      "entityType": "salesLog"
+    },
+    {
+      "item": {
+        "date": "2026-06-19",
+        "createdAt": "2026-06-19T02:32:43.215Z",
+        "notes": "",
+        "channel": "X",
+        "count": 4,
+        "id": "1781836363215_7vmvzs",
+        "type": "dm"
+      },
+      "deletedAt": "2026-06-21T10:35:03.412Z",
+      "label": "2026-06-19 DM 4件",
+      "trashId": "1782038103412_qazvkb",
+      "entityType": "salesLog"
+    },
+    {
+      "item": {
+        "date": "2026-06-20",
+        "createdAt": "2026-06-20T03:04:16.399Z",
+        "notes": "",
+        "count": 5,
+        "channel": "X",
+        "id": "1781924656399_men3rl",
+        "type": "dm"
+      },
+      "deletedAt": "2026-06-21T10:35:03.277Z",
+      "label": "2026-06-20 DM 5件",
+      "trashId": "1782038103277_kse4jk",
+      "entityType": "salesLog"
+    },
+    {
+      "deletedAt": "2026-06-21T10:35:03.112Z",
+      "item": {
+        "date": "2026-06-21",
+        "createdAt": "2026-06-21T00:59:33.229Z",
+        "notes": "",
+        "channel": "X",
+        "count": 6,
+        "id": "1782003573229_y14kk1",
+        "type": "dm"
+      },
+      "trashId": "1782038103110_f3bvte",
+      "label": "2026-06-21 DM 6件",
+      "entityType": "salesLog"
+    },
+    {
+      "deletedAt": "2026-06-21T10:34:58.430Z",
+      "item": {
+        "name": "Instagram営業メモ（Web制作・保守案件獲得用）",
+        "createdAt": "2026-06-16T22:10:25.323Z",
+        "id": "1781647825323_3u2uhx",
+        "steps": [
+          "【目的】",
+          "・まずは初案件獲得",
+          "・サイト制作3万円で受注",
+          "・実績とお客様の声を集める",
+          "・将来的に保守契約へ繋げる",
+          "━━━━━━━━━━━━━━",
+          "【ターゲット選定】",
+          "優先度高",
+          "・整体院",
+          "・リラクゼーションサロン",
+          "・パーソナルジム",
+          "・ネイルサロン",
+          "・エステサロン",
+          "・美容室",
+          "条件",
+          "・フォロワー500〜3000",
+          "・投稿頻度が高い",
+          "・ストーリー更新あり",
+          "・予約はLINEや予約サイト",
+          "・ホームページなし",
+          "または古いホームページ",
+          "・Google口コミがある",
+          "・スタッフ募集や店舗拡大中",
+          "避ける",
+          "・フォロワー100以下",
+          "・開業準備中",
+          "・投稿停止",
+          "・副業感が強い",
+          "・集客できていない",
+          "━━━━━━━━━━━━━━",
+          "【営業の考え方】",
+          "× ホームページを売る",
+          "○ 集客改善を売る",
+          "お客様が欲しいもの",
+          "・予約",
+          "・集客",
+          "・信頼",
+          "・リピート率向上",
+          "お客様が欲しくないもの",
+          "・ホームページそのもの",
+          "━━━━━━━━━━━━━━",
+          "【初回DMの目的】",
+          "売り込まない",
+          "会話を作る",
+          "ストーリー返信から入る",
+          "例",
+          "・お客様は何歳くらいの方が多いんですか？",
+          "・男性と女性どちらが多いんでしょうか？",
+          "・新規のお客様はInstagram経由が多いんですか？",
+          "━━━━━━━━━━━━━━",
+          "【ヒアリング項目】",
+          "①客層",
+          "・年齢層",
+          "・男女比",
+          "②集客方法",
+          "・Instagram",
+          "・紹介",
+          "・Google",
+          "・予約サイト",
+          "③予約方法",
+          "・LINE",
+          "・EPARK",
+          "・ホットペッパー",
+          "・電話",
+          "④悩み",
+          "・新規集客",
+          "・リピート率",
+          "・予約管理",
+          "・認知度",
+          "━━━━━━━━━━━━━━",
+          "【会話の流れ】",
+          "ストーリー返信",
+          "↓",
+          "客層を聞く",
+          "↓",
+          "集客方法を聞く",
+          "↓",
+          "予約方法を聞く",
+          "↓",
+          "課題を聞く",
+          "↓",
+          "改善案を伝える",
+          "↓",
+          "興味があればサイト提案",
+          "━━━━━━━━━━━━━━",
+          "【やってはいけないこと】",
+          "・いきなり営業",
+          "・いきなりホームページ提案",
+          "・長文連投",
+          "・無料試作品を大量制作",
+          "・予算確認前に制作開始",
+          "━━━━━━━━━━━━━━",
+          "【試作品制作の条件】",
+          "以下を満たした場合のみ",
+          "・返信が続いている",
+          "・集客課題がある",
+          "・サイトに興味がある",
+          "・予算感がある程度確認できた",
+          "満たさない場合は作らない",
+          "━━━━━━━━━━━━━━",
+          "【受注前に確認すること】",
+          "・ホームページを検討しているか",
+          "・予算感",
+          "・いつまでに欲しいか",
+          "・予約導線の希望",
+          "・掲載したい内容",
+          "━━━━━━━━━━━━━━",
+          "【価格戦略】",
+          "現状",
+          "制作費：3万円",
+          "目的",
+          "利益ではなく実績獲得",
+          "まずは",
+          "・実績",
+          "・お客様の声",
+          "・紹介",
+          "を集める",
+          "━━━━━━━━━━━━━━",
+          "【毎日の行動】",
+          "Instagram営業 10件",
+          "記録する",
+          "・送信数",
+          "・返信数",
+          "・会話継続数",
+          "・課題ヒアリング数",
+          "・提案数",
+          "・受注数",
+          "毎週見直す",
+          "返信率ではなく",
+          "受注率を見る",
+          "━━━━━━━━━━━━━━",
+          "【重要】",
+          "返信が来る人ではなく",
+          "お金を払える人を探す",
+          "ホームページが欲しい人ではなく",
+          "集客や予約導線に課題がある人を探す",
+          "サイト制作会社ではなく",
+          "「集客・予約改善を手伝う人」",
+          "として認識してもらう"
+        ]
+      },
+      "label": "Instagram営業メモ（Web制作・保守案件獲得用）",
+      "trashId": "1782038098430_jnsz1n",
+      "entityType": "customDmTemplate"
+    },
+    {
+      "deletedAt": "2026-06-14T16:15:19.543Z",
+      "item": {
+        "doneAt": null,
+        "createdAt": "2026-05-23T03:31:14.210Z",
+        "phaseId": "p4",
+        "text": "Exit 200M 開発 2時間",
+        "id": "qt-product",
+        "category": "product",
+        "done": false
+      },
+      "label": "Exit 200M 開発 2時間",
+      "trashId": "1781453719543_9lin0u",
+      "entityType": "defaultTask"
+    },
+    {
+      "deletedAt": "2026-06-14T16:15:19.409Z",
+      "item": {
+        "doneAt": null,
+        "createdAt": "2026-05-23T03:31:14.210Z",
+        "phaseId": "p2",
+        "text": "15万円プラン提案書を送付",
+        "id": "qt-proposal",
+        "category": "sales",
+        "done": false
+      },
+      "label": "15万円プラン提案書を送付",
+      "trashId": "1781453719409_eagcrc",
+      "entityType": "defaultTask"
+    },
+    {
+      "item": {
+        "createdAt": "2026-05-23T03:31:14.210Z",
+        "doneAt": null,
+        "phaseId": "p2",
+        "id": "qt-report",
+        "text": "継続クライアントへ月次レポート",
+        "category": "retention",
+        "done": false
+      },
+      "deletedAt": "2026-06-14T16:15:19.258Z",
+      "trashId": "1781453719258_gimkde",
+      "label": "継続クライアントへ月次レポート",
+      "entityType": "defaultTask"
+    },
+    {
+      "deletedAt": "2026-06-14T16:15:19.125Z",
+      "item": {
+        "doneAt": null,
+        "createdAt": "2026-05-23T03:31:14.210Z",
+        "phaseId": "p1",
+        "text": "実績ページを更新",
+        "id": "qt-portfolio",
+        "category": "delivery",
+        "done": false
+      },
+      "trashId": "1781453719125_i3ehws",
+      "label": "実績ページを更新",
+      "entityType": "defaultTask"
+    },
+    {
+      "item": {
+        "doneAt": null,
+        "createdAt": "2026-05-23T03:31:14.210Z",
+        "phaseId": "p1",
+        "id": "qt-dm",
+        "text": "DM 10件送信",
+        "category": "sales",
+        "done": false
+      },
+      "deletedAt": "2026-06-14T16:15:18.975Z",
+      "trashId": "1781453718975_apm97v",
+      "label": "DM 10件送信",
+      "entityType": "defaultTask"
+    },
+    {
+      "deletedAt": "2026-06-14T16:12:47.510Z",
+      "item": {
+        "date": "2026-06-15",
+        "createdAt": "2026-06-14T16:11:30.141Z",
+        "notes": "",
+        "channel": "X",
+        "count": 1,
+        "id": "1781453490140_5rk0ui",
+        "type": "dm"
+      },
+      "label": "今日のDM記録",
+      "trashId": "1781453567510_8krwms",
+      "entityType": "salesLog"
+    },
+    {
+      "deletedAt": "2026-06-14T15:14:34.481Z",
+      "item": {
+        "revenue": 0,
+        "notes": "",
+        "takeHome": 0,
+        "month": "2026-04",
+        "recurring": 0,
+        "updatedAt": "2026-06-14T15:14:20.060Z"
+      },
+      "label": "2026-04の記録",
+      "trashId": "1781450074481_jjlhlc",
+      "entityType": "monthlyRecord"
+    }
+  ],
+  "archives": [],
+  "monthOverrides": {
+    "2026-07": {
+      "label": "7月",
+      "title": "モニター3件の完了＆次フェーズ準備",
+      "hidden": false,
+      "outcomes": [],
+      "actions": []
+    },
+    "2026-05": {
+      "label": "5月",
+      "hidden": false,
+      "title": "初案件の獲得",
+      "outcomes": [
+        "営業用Instagramアカウント整備",
+        "試作品サイト納品"
+      ],
+      "actions": [
+        "営業用のInstagramアカウント整備",
+        "初案件受注＆納品"
+      ]
+    },
+    "2026-06": {
+      "label": "6月",
+      "title": "初案件獲得の継続＆2案件目の獲得",
+      "hidden": false,
+      "actions": [
+        "初案件受注",
+        "2サイト目受注",
+        "試作品サイト5サイト提案",
+        "Instagramアカウントフォロワー100人達成"
+      ],
+      "outcomes": [
+        "Instagramアカウントフォロワー100人達成"
+      ]
+    }
+  },
+  "monthTargetOverrides": {
+    "2026-05": 30000,
+    "2026-06": 60000
+  },
+  "phaseOverrides": {},
+  "roadmapIntro": null,
+  "milestoneOverrides": {
+    "p1-m2": {
+      "hidden": true
+    },
+    "p1-m1": {
+      "hidden": true
+    },
+    "p1-m4": {
+      "hidden": true
+    },
+    "p1-m3": {
+      "hidden": true
+    }
+  },
+  "customMilestones": [
+    {
+      "phaseId": "p1",
+      "createdAt": "2026-06-14T15:08:21.238Z",
+      "doneAt": null,
+      "text": "初案件獲得＆納品",
+      "id": "1781449701238_tdy0g8",
+      "done": false
+    },
+    {
+      "phaseId": "p1",
+      "createdAt": "2026-06-14T15:08:40.439Z",
+      "doneAt": null,
+      "text": "2案件目の獲得＆納品",
+      "id": "1781449720439_i4fj2b",
+      "done": false
+    },
+    {
+      "phaseId": "p1",
+      "doneAt": null,
+      "createdAt": "2026-06-14T15:08:57.186Z",
+      "text": "3案件目獲得＆納品",
+      "id": "1781449737186_sj4x9q",
+      "done": false
+    },
+    {
+      "phaseId": "p1",
+      "doneAt": null,
+      "createdAt": "2026-06-14T15:09:13.489Z",
+      "text": "Instagramフォロワー150人",
+      "id": "1781449753489_7otnol",
+      "done": false
+    }
+  ],
+  "customDmTemplates": [],
+  "hiddenDmTemplateIds": [
+    "dm-2step",
+    "dm-follow",
+    "dm-upsell"
+  ],
+  "deletedDefaultTaskIds": [
+    "qt-dm",
+    "qt-portfolio",
+    "qt-report",
+    "qt-proposal",
+    "qt-product"
+  ],
+  "monthTaskChecks": {},
+  "snsLogs": [
+    {
+      "id": "1782042173974_kf8cw6",
+      "notes": "",
+      "instagram": {
+        "views": 274,
+        "reach": 41,
+        "profileAccess": 96,
+        "linkTaps": 9
+      },
+      "weekStart": "2026-06-21",
+      "sales": {
+        "dmSent": 32,
+        "replies": 1,
+        "meetings": 0,
+        "orders": 0
+      },
+      "updatedAt": "2026-06-21T11:42:53.974Z"
+    },
+    {
+      "notes": "",
+      "id": "1782719012121_lyqc54",
+      "instagram": {
+        "views": 380,
+        "reach": 66,
+        "profileAccess": 138,
+        "linkTaps": 4
+      },
+      "weekStart": "2026-06-28",
+      "sales": {
+        "dmSent": 51,
+        "replies": 8,
+        "meetings": 0,
+        "orders": 0
+      },
+      "updatedAt": "2026-06-29T07:43:32.121Z"
+    },
+    {
+      "createdAt": "2026-07-13T02:05:43.784Z",
+      "notes": "",
+      "weekStart": "2026-07-12",
+      "id": "1783821396846_dbhwef",
+      "instagram": {
+        "views": 315,
+        "reach": 50,
+        "profileAccess": 156,
+        "linkTaps": 6
+      },
+      "sales": {
+        "dmSent": 65,
+        "replies": 17,
+        "meetings": 0,
+        "orders": 0
+      },
+      "updatedAt": "2026-07-13T02:10:00.533Z"
+    },
+    {
+      "createdAt": "2026-07-20T22:02:25.721Z",
+      "notes": "",
+      "weekStart": "2026-07-19",
+      "id": "1784584945720_dfcrf3",
+      "instagram": {
+        "views": 186,
+        "reach": 52,
+        "profileAccess": 69,
+        "linkTaps": 4
+      },
+      "sales": {
+        "dmSent": 32,
+        "replies": 6,
+        "meetings": 0,
+        "orders": 0
+      },
+      "updatedAt": "2026-07-20T22:02:25.721Z"
+    }
+  ],
+  "sync": {
+    "enabled": true,
+    "autoOptOut": false,
+    "syncId": "cfsi0gmj1bgojw4u8ez1",
+    "pairAcknowledged": true,
+    "pairedAt": "2026-07-23T02:46:49.230Z",
+    "preferRemoteOnce": false,
+    "lastSyncAt": "2026-08-08T11:40:17.677Z",
+    "lastSyncStatus": "ok",
+    "lastSyncMessage": "この端末が最新のため送信"
+  },
+  "_meta": {
+    "deviceId": "d_jq0k7d283t",
+    "updatedAt": "2026-07-29T22:34:28.508Z",
+    "updatedAtMs": 1785364468508,
+    "revision": 155
+  }
+}

@@ -22,7 +22,6 @@ import type {
 import { pullRemote, pushRemote, ensureSyncId } from './sync/puterSync'
 import {
   emptyBusiness,
-  extractBusinessFromLegacy,
   mergeBusiness,
   normalizeIgId,
   sundayOf,
@@ -31,11 +30,11 @@ import {
 } from './business/helpers'
 import {
   emptyBody,
-  extractBodyFromLegacy,
   hydrateBody,
   mergeBody,
   syncBodyMetricPoints,
 } from './body/helpers'
+import { BAKED_BODY, BAKED_BUSINESS } from './data/bakedLegacy'
 import { ensureCoreSpaces, isLockedSpace } from './lib/ensureCoreSpaces'
 
 const STORAGE_KEY = 'lifeHub_data_v1'
@@ -58,7 +57,6 @@ type HubState = AppData & {
   deleteClient: (id: string) => void
   saveIg: (entry: Omit<IgEntry, 'id' | 'createdAt'> & { id?: string }) => string | null
   deleteIg: (id: string) => void
-  importLegacyBusiness: (parsed: Record<string, unknown>) => void
   saveDayWeight: (date: string, weight: number) => void
   saveDayCalories: (date: string, calories: number) => void
   saveBodySettings: (settings: BodySettings) => void
@@ -66,7 +64,6 @@ type HubState = AppData & {
   deleteExercise: (id: string) => void
   saveWorkout: (workout: Omit<Workout, 'id'> & { id?: string }) => void
   deleteWorkout: (date: string) => void
-  importLegacyBody: (parsed: Record<string, unknown>) => void
   setSyncEnabled: (enabled: boolean) => void
   rotateSyncId: () => void
   setSyncId: (id: string) => void
@@ -343,13 +340,6 @@ export const useHub = create<HubState>()(
             },
           })),
 
-        importLegacyBusiness: (parsed) =>
-          set((s) => {
-            const incoming = extractBusinessFromLegacy(parsed)
-            const business = mergeBusiness(s.business ?? emptyBusiness(), incoming)
-            return { ...stamp(), ...withDmMetrics(s, business) }
-          }),
-
         saveDayWeight: (date, weight) =>
           set((s) => {
             const records = { ...s.body.records }
@@ -438,13 +428,6 @@ export const useHub = create<HubState>()(
               workouts: s.body.workouts.filter((w) => w.date !== date),
             },
           })),
-
-        importLegacyBody: (parsed) =>
-          set((s) => {
-            const incoming = extractBodyFromLegacy(parsed)
-            const body = mergeBody(s.body ?? emptyBody(), incoming)
-            return { ...stamp(), ...withBodyMetrics(s, body) }
-          }),
 
         setSyncEnabled: (enabled) =>
           set((s) => ({
@@ -582,8 +565,14 @@ export const useHub = create<HubState>()(
           }
           return sp
         })
-        const body = p.body ? hydrateBody(p.body) : current.body ?? emptyBody()
-        const business = p.business ? { ...emptyBusiness(), ...p.business } : current.business
+        const business = mergeBusiness(
+          p.business ? { ...emptyBusiness(), ...p.business } : current.business ?? emptyBusiness(),
+          BAKED_BUSINESS,
+        )
+        const body = mergeBody(
+          p.body ? hydrateBody(p.body) : current.body ?? emptyBody(),
+          BAKED_BODY,
+        )
         const tasks = Array.isArray(p.tasks) ? p.tasks : current.tasks
         const metrics = Array.isArray(p.metrics) ? p.metrics : current.metrics
         const ensured = ensureCoreSpaces({
@@ -607,6 +596,8 @@ export const useHub = create<HubState>()(
       },
       onRehydrateStorage: () => (state) => {
         if (!state) return
+        state.business = mergeBusiness(state.business ?? emptyBusiness(), BAKED_BUSINESS)
+        state.body = mergeBody(state.body ? hydrateBody(state.body) : emptyBody(), BAKED_BODY)
         const ensured = ensureCoreSpaces(state)
         state.spaces = ensured.spaces
         state.tasks = ensured.tasks

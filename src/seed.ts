@@ -1,30 +1,25 @@
-import { format, subDays } from 'date-fns'
-import type { AppData, MetricSeries, Task } from './types'
+import type { AppData, Task } from './types'
+import { mergeBusiness, syncDmMetricPoints } from './business/helpers'
 import { emptyBusiness } from './business/helpers'
-import { emptyBody } from './body/helpers'
+import { emptyBody, mergeBody, syncBodyMetricPoints } from './body/helpers'
 import { createDefaultSpaces } from './lib/ensureCoreSpaces'
+import { BAKED_BODY, BAKED_BUSINESS } from './data/bakedLegacy'
 import { uid } from './lib/id'
 
 export { uid }
 
-function spark(spaceId: string, key: string, label: string, base: number, jitter: number): MetricSeries {
-  const points = Array.from({ length: 14 }, (_, i) => {
-    const date = format(subDays(new Date(), 13 - i), 'yyyy-MM-dd')
-    const wave = Math.sin(i / 2.2) * jitter
-    return { date, value: Math.round((base + wave + i * (jitter * 0.08)) * 10) / 10 }
-  })
-  return { id: uid(), spaceId, key, label, points }
-}
-
 export function createSeedData(): AppData {
   const spaces = createDefaultSpaces()
-  const business = spaces.find((s) => s.key === 'business')!
+  const businessSpace = spaces.find((s) => s.key === 'business')!
   const bodySpace = spaces.find((s) => s.key === 'body')!
+
+  const business = mergeBusiness(emptyBusiness(), BAKED_BUSINESS)
+  const body = mergeBody(emptyBody(), BAKED_BODY)
 
   const tasks: Task[] = [
     {
       id: uid(),
-      spaceId: business.id,
+      spaceId: businessSpace.id,
       title: 'DM 10件（探す≤30分）',
       scope: 'today',
       done: false,
@@ -32,7 +27,7 @@ export function createSeedData(): AppData {
     },
     {
       id: uid(),
-      spaceId: business.id,
+      spaceId: businessSpace.id,
       title: '返信は日程取りまで進める',
       scope: 'today',
       done: false,
@@ -48,7 +43,7 @@ export function createSeedData(): AppData {
     },
     {
       id: uid(),
-      spaceId: business.id,
+      spaceId: businessSpace.id,
       title: '週DM 80 / 商談 2',
       scope: 'week',
       done: false,
@@ -64,17 +59,16 @@ export function createSeedData(): AppData {
     },
   ]
 
+  let metrics = syncDmMetricPoints(business, [], businessSpace.id)
+  metrics = syncBodyMetricPoints(body, metrics, bodySpace.id)
+
   return {
     version: 2,
     spaces,
     tasks,
-    metrics: [
-      spark(business.id, 'dm', 'DM送信', 8, 4),
-      spark(business.id, 'meetings', '商談', 0.4, 1.2),
-      spark(bodySpace.id, 'weight', '体重 kg', 61.5, 0.8),
-    ],
-    business: emptyBusiness(),
-    body: emptyBody(),
+    metrics,
+    business,
+    body,
     sync: {
       enabled: false,
       syncId: '',
