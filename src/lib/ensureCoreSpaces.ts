@@ -14,6 +14,30 @@ const DEFAULT_BODY_TASKS: Omit<Task, 'id' | 'spaceId' | 'createdAt'>[] = [
   { title: '体重を3回以上記録', scope: 'week', done: false },
 ]
 
+/** 固定項目（削除不可）のキー */
+export const LOCKED_SPACE_KEYS = [
+  'business',
+  'university',
+  'body',
+  'creative',
+  'driving',
+] as const
+
+export type LockedSpaceKey = (typeof LOCKED_SPACE_KEYS)[number]
+
+const PRESET_SPACES: {
+  key: LockedSpaceKey
+  name: string
+  kind: Space['kind']
+  color: string
+}[] = [
+  { key: 'business', name: '起業', kind: 'business', color: '#2563eb' },
+  { key: 'university', name: '大学', kind: 'custom', color: '#16a34a' },
+  { key: 'body', name: '筋トレ', kind: 'body', color: '#dc2626' },
+  { key: 'creative', name: '創作', kind: 'custom', color: '#ca8a04' },
+  { key: 'driving', name: '自動車学校', kind: 'custom', color: '#eab308' },
+]
+
 function makeTasks(spaceId: string, defs: Omit<Task, 'id' | 'spaceId' | 'createdAt'>[]): Task[] {
   return defs.map((t) => ({
     ...t,
@@ -23,52 +47,99 @@ function makeTasks(spaceId: string, defs: Omit<Task, 'id' | 'spaceId' | 'created
   }))
 }
 
+function spaceKey(sp: Space): string | undefined {
+  if (sp.key) return sp.key
+  if (sp.kind === 'business') return 'business'
+  if (sp.kind === 'body') return 'body'
+  if (sp.name === '大学') return 'university'
+  if (sp.name === '創作') return 'creative'
+  if (sp.name === '自動車学校') return 'driving'
+  return undefined
+}
+
+export function isLockedSpace(sp: Space) {
+  const key = spaceKey(sp)
+  return !!key && (LOCKED_SPACE_KEYS as readonly string[]).includes(key)
+}
+
 /**
- * 起業・筋トレのコア項目が消えていたら復元する。
- * business / body のデータ本体は残っている想定。
+ * コア項目が欠けていれば復元し、既定の並びへ寄せる。
+ * ユーザーが並べ替えた既存項目は、欠けたものだけ挿入して順序を極力維持する。
  */
 export function ensureCoreSpaces(
   data: Pick<AppData, 'spaces' | 'tasks' | 'metrics' | 'business' | 'body'>,
 ): Pick<AppData, 'spaces' | 'tasks' | 'metrics'> {
-  let spaces = [...(data.spaces ?? [])]
+  let spaces = (data.spaces ?? []).map((sp) => {
+    const key = spaceKey(sp)
+    const preset = PRESET_SPACES.find((p) => p.key === key)
+    if (!preset) return sp
+    return {
+      ...sp,
+      key: preset.key,
+      name: preset.name,
+      kind: preset.kind,
+      color: preset.color,
+    }
+  })
   let tasks = [...(data.tasks ?? [])]
   let metrics = [...(data.metrics ?? [])]
 
-  let business = spaces.find((s) => s.kind === 'business' && !s.archived)
-  if (!business) {
-    business = {
-      id: uid(),
-      name: '起業',
-      kind: 'business',
-      color: '#2563eb',
-      createdAt: Date.now(),
-    } satisfies Space
-    spaces.unshift(business)
-    tasks = [...makeTasks(business.id, DEFAULT_BUSINESS_TASKS), ...tasks]
-  } else {
-    spaces = spaces.map((s) =>
-      s.id === business!.id ? { ...s, name: '起業', color: '#2563eb' } : s,
-    )
-    business = spaces.find((s) => s.id === business!.id)!
+  const byKey = () => {
+    const m = new Map<string, Space>()
+    for (const sp of spaces) {
+      const k = spaceKey(sp)
+      if (k) m.set(k, sp)
+    }
+    return m
   }
 
-  let body = spaces.find((s) => s.kind === 'body' && !s.archived)
-  if (!body) {
-    body = {
+  for (const preset of PRESET_SPACES) {
+    const map = byKey()
+    if (map.has(preset.key)) continue
+
+    const created: Space = {
       id: uid(),
-      name: '筋トレ',
-      kind: 'body',
-      color: '#dc2626',
+      name: preset.name,
+      kind: preset.kind,
+      color: preset.color,
+      key: preset.key,
       createdAt: Date.now(),
-    } satisfies Space
-    const bizIdx = spaces.findIndex((s) => s.kind === 'business')
-    if (bizIdx >= 0) spaces.splice(bizIdx + 1, 0, body)
-    else spaces.unshift(body)
-    tasks = [...makeTasks(body.id, DEFAULT_BODY_TASKS), ...tasks]
+    }
+
+    const presetIdx = PRESET_SPACES.findIndex((p) => p.key === preset.key)
+    let insertAt = spaces.length
+    for (let i = presetIdx - 1; i >= 0; i--) {
+      const prev = byKey().get(PRESET_SPACES[i].key)
+      if (prev) {
+        insertAt = spaces.findIndex((s) => s.id === prev.id) + 1
+        break
+      }
+    }
+    spaces.splice(insertAt, 0, created)
+
+    if (preset.key === 'business') {
+      tasks = [...makeTasks(created.id, DEFAULT_BUSINESS_TASKS), ...tasks]
+    }
+    if (preset.key === 'body') {
+      tasks = [...makeTasks(created.id, DEFAULT_BODY_TASKS), ...tasks]
+    }
   }
 
-  metrics = syncDmMetricPoints(data.business, metrics, business.id)
-  metrics = syncBodyMetricPoints(data.body, metrics, body.id)
+  const business = byKey().get('business')
+  const body = byKey().get('body')
+  if (business) metrics = syncDmMetricPoints(data.business, metrics, business.id)
+  if (body) metrics = syncBodyMetricPoints(data.body, metrics, body.id)
 
   return { spaces, tasks, metrics }
+}
+
+export function createDefaultSpaces(): Space[] {
+  return PRESET_SPACES.map((p) => ({
+    id: uid(),
+    name: p.name,
+    kind: p.kind,
+    color: p.color,
+    key: p.key,
+    createdAt: Date.now(),
+  }))
 }

@@ -36,7 +36,7 @@ import {
   mergeBody,
   syncBodyMetricPoints,
 } from './body/helpers'
-import { ensureCoreSpaces } from './lib/ensureCoreSpaces'
+import { ensureCoreSpaces, isLockedSpace } from './lib/ensureCoreSpaces'
 
 const STORAGE_KEY = 'lifeHub_data_v1'
 
@@ -48,6 +48,7 @@ type HubState = AppData & {
   addTask: (spaceId: string, title: string, scope: TaskScope) => void
   addSpace: (name: string, kind: SpaceKind, temporary?: boolean) => void
   removeSpace: (id: string) => void
+  reorderSpaces: (orderedIds: string[]) => void
   addMetricPoint: (seriesId: string, value: number, date?: string) => void
   bumpDm: (delta: number) => void
   setBusinessGoals: (daily: number, weekly: number) => void
@@ -158,10 +159,7 @@ export const useHub = create<HubState>()(
         removeSpace: (id) =>
           set((s) => {
             const target = s.spaces.find((x) => x.id === id)
-            // 起業・筋トレは設定からも消さない（誤削除防止）
-            if (target && (target.kind === 'business' || target.kind === 'body')) {
-              return s
-            }
+            if (target && isLockedSpace(target)) return s
             return {
               ...stamp(),
               spaces: s.spaces.filter((x) => x.id !== id),
@@ -170,6 +168,21 @@ export const useHub = create<HubState>()(
               activeSpaceId: s.activeSpaceId === id ? null : s.activeSpaceId,
               activeView: s.activeSpaceId === id ? 'home' : s.activeView,
             }
+          }),
+
+        reorderSpaces: (orderedIds) =>
+          set((s) => {
+            const map = new Map(s.spaces.map((sp) => [sp.id, sp]))
+            const next: typeof s.spaces = []
+            for (const id of orderedIds) {
+              const sp = map.get(id)
+              if (sp) {
+                next.push(sp)
+                map.delete(id)
+              }
+            }
+            for (const sp of map.values()) next.push(sp)
+            return { ...stamp(), spaces: next }
           }),
 
         addMetricPoint: (seriesId, value, date) => {

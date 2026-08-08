@@ -7,6 +7,8 @@ export interface Space {
   name: string
   kind: SpaceKind
   color: string
+  /** 固定プリセット識別子（並び替え可・削除不可） */
+  key?: string
   temporary?: boolean
   archived?: boolean
   createdAt: number

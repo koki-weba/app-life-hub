@@ -1,4 +1,4 @@
-import { AnimatePresence, motion } from 'framer-motion'
+import { AnimatePresence, Reorder, motion } from 'framer-motion'
 import {
   CartesianGrid,
   Legend,
@@ -13,7 +13,7 @@ import { Component, useEffect, useMemo, useState, type ErrorInfo, type ReactNode
 import { BusinessPanel } from './business/BusinessPanel'
 import { BodyPanel } from './body/BodyPanel'
 import { useHub } from './store'
-import { ensureCoreSpaces } from './lib/ensureCoreSpaces'
+import { ensureCoreSpaces, isLockedSpace } from './lib/ensureCoreSpaces'
 import type { SpaceKind, TaskScope } from './types'
 import './index.css'
 
@@ -194,21 +194,14 @@ function SpaceView({ spaceId }: { spaceId: string }) {
 
   return (
     <motion.div {...pageMotion}>
-      <section className="panel">
-        <h2 style={{ display: 'flex', justifyContent: 'space-between', gap: '0.5rem' }}>
-          <span>{space.name}</span>
-          {space.temporary ? (
+      {space.temporary ? (
+        <section className="panel">
+          <h2 style={{ display: 'flex', justifyContent: 'space-between', gap: '0.5rem' }}>
+            <span>{space.name}</span>
             <span className="muted small">一時項目</span>
-          ) : null}
-        </h2>
-        <p className="muted small" style={{ marginTop: '-0.4rem' }}>
-          {space.kind === 'business'
-            ? 'DM・週次・案件・IGリスト'
-            : space.kind === 'body'
-              ? '体重・カロリー・トレーニング'
-              : 'カスタム項目'}
-        </p>
-      </section>
+          </h2>
+        </section>
+      ) : null}
 
       {space.kind === 'business' ? <BusinessPanel /> : null}
       {space.kind === 'body' ? <BodyPanel /> : null}
@@ -373,11 +366,11 @@ function SettingsView() {
       <section className="panel">
         <h2>項目一覧</h2>
         <p className="muted small" style={{ marginTop: '-0.35rem', marginBottom: '0.75rem' }}>
-          追加・削除はこの設定画面でのみ行えます。起業・筋トレは削除できません。
+          追加・削除はこの設定画面でのみ行えます。起業・大学・筋トレ・創作・自動車学校は削除できません。
         </p>
         <div className="task-list">
           {spaces.map((sp) => {
-            const locked = sp.kind === 'business' || sp.kind === 'body'
+            const locked = isLockedSpace(sp)
             return (
               <div key={sp.id} className="task-item">
                 <span
@@ -389,18 +382,14 @@ function SettingsView() {
                 <span className="task-title">
                   {sp.temporary ? (
                     <span className="muted small">一時項目</span>
+                  ) : locked ? (
+                    <span className="muted small">固定</span>
                   ) : (
-                    <span className="muted small">
-                      {sp.kind === 'business'
-                        ? '起業'
-                        : sp.kind === 'body'
-                          ? '筋トレ'
-                          : 'その他'}
-                    </span>
+                    <span className="muted small">その他</span>
                   )}
                 </span>
                 {locked ? (
-                  <span className="muted small">固定</span>
+                  <span className="muted small">削除不可</span>
                 ) : (
                   <button
                     type="button"
@@ -421,7 +410,7 @@ function SettingsView() {
       <section className="panel">
         <h2>項目を追加</h2>
         <p className="muted small" style={{ marginTop: '-0.35rem', marginBottom: '0.75rem' }}>
-          数ヶ月だけの一時項目も追加できます
+          数ヶ月だけの一時項目も追加できます。下部ナビはドラッグで並べ替えできます。
         </p>
         <label className="field">
           <span>名前</span>
@@ -636,15 +625,15 @@ function AppShell() {
   const activeView = useHub((s) => s.activeView)
   const activeSpaceId = useHub((s) => s.activeSpaceId)
   const spacesAll = useHub((s) => s.spaces)
-  const sync = useHub((s) => s.sync)
   const setView = useHub((s) => s.setView)
+  const reorderSpaces = useHub((s) => s.reorderSpaces)
 
   useEffect(() => {
     const s = useHub.getState()
     const ensured = ensureCoreSpaces(s)
     const sameSpaces =
       ensured.spaces.length === s.spaces.length &&
-      ensured.spaces.every((sp, i) => sp.id === s.spaces[i]?.id)
+      ensured.spaces.every((sp, i) => sp.id === s.spaces[i]?.id && sp.key === s.spaces[i]?.key)
     if (!sameSpaces || ensured.tasks.length !== s.tasks.length) {
       useHub.setState({ ...ensured, updatedAt: Date.now() })
     }
@@ -654,6 +643,7 @@ function AppShell() {
     () => (spacesAll ?? []).filter((x) => !x.archived),
     [spacesAll],
   )
+  const spaceIds = useMemo(() => spaces.map((s) => s.id), [spaces])
 
   const activeSpace = spaces.find((s) => s.id === activeSpaceId)
   const isHub = activeView === 'home' || activeView === 'settings'
@@ -673,13 +663,7 @@ function AppShell() {
       style={{ ['--brand' as string]: themeBrand }}
     >
       <header className="topbar">
-        <div>
-          <p className="eyebrow">Life Hub</p>
-          <h1>{title}</h1>
-        </div>
-        <div className="sync-pill" data-on={sync.enabled}>
-          {sync.enabled ? '同期ON' : '端末のみ'}
-        </div>
+        <h1>{title}</h1>
       </header>
 
       <AnimatePresence mode="wait">
@@ -695,26 +679,43 @@ function AppShell() {
       <nav className="bottom-nav" aria-label="メイン">
         <button
           type="button"
-          className={`nav-item ${activeView === 'home' ? 'active' : ''}`}
+          className={`nav-item nav-item-fixed ${activeView === 'home' ? 'active' : ''}`}
           onClick={() => setView('home')}
         >
           <div className="nav-dot" style={{ background: '#0f172a' }} />
           ホーム
         </button>
-        {spaces.map((s) => (
-          <button
-            key={s.id}
-            type="button"
-            className={`nav-item ${activeView === 'space' && activeSpaceId === s.id ? 'active' : ''}`}
-            onClick={() => setView('space', s.id)}
-          >
-            <div className="nav-dot" style={{ background: s.color }} />
-            {s.name}
-          </button>
-        ))}
+
+        <Reorder.Group
+          as="div"
+          axis="x"
+          values={spaceIds}
+          onReorder={reorderSpaces}
+          className="nav-reorder"
+        >
+          {spaces.map((s) => (
+            <Reorder.Item
+              as="div"
+              key={s.id}
+              value={s.id}
+              className="nav-reorder-item"
+              whileDrag={{ scale: 1.06, zIndex: 5 }}
+            >
+              <button
+                type="button"
+                className={`nav-item ${activeView === 'space' && activeSpaceId === s.id ? 'active' : ''}`}
+                onClick={() => setView('space', s.id)}
+              >
+                <div className="nav-dot" style={{ background: s.color }} />
+                {s.name}
+              </button>
+            </Reorder.Item>
+          ))}
+        </Reorder.Group>
+
         <button
           type="button"
-          className={`nav-item ${activeView === 'settings' ? 'active' : ''}`}
+          className={`nav-item nav-item-fixed ${activeView === 'settings' ? 'active' : ''}`}
           onClick={() => setView('settings')}
         >
           <div className="nav-dot" style={{ background: '#0f172a' }} />

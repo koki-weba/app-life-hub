@@ -1,7 +1,8 @@
 import { format, subDays } from 'date-fns'
-import type { AppData, MetricSeries, Space, Task } from './types'
+import type { AppData, MetricSeries, Task } from './types'
 import { emptyBusiness } from './business/helpers'
 import { emptyBody } from './body/helpers'
+import { createDefaultSpaces } from './lib/ensureCoreSpaces'
 import { uid } from './lib/id'
 
 export { uid }
@@ -16,20 +17,9 @@ function spark(spaceId: string, key: string, label: string, base: number, jitter
 }
 
 export function createSeedData(): AppData {
-  const business: Space = {
-    id: uid(),
-    name: '起業',
-    kind: 'business',
-    color: '#2563eb',
-    createdAt: Date.now(),
-  }
-  const bodySpace: Space = {
-    id: uid(),
-    name: '筋トレ',
-    kind: 'body',
-    color: '#dc2626',
-    createdAt: Date.now(),
-  }
+  const spaces = createDefaultSpaces()
+  const business = spaces.find((s) => s.key === 'business')!
+  const bodySpace = spaces.find((s) => s.key === 'body')!
 
   const tasks: Task[] = [
     {
@@ -76,7 +66,7 @@ export function createSeedData(): AppData {
 
   return {
     version: 2,
-    spaces: [business, bodySpace],
+    spaces,
     tasks,
     metrics: [
       spark(business.id, 'dm', 'DM送信', 8, 4),
