@@ -247,6 +247,21 @@ button { cursor: pointer; }
 }
 .metric-card strong { font-size: 1.15rem; letter-spacing: -0.02em; }
 
+.migrate-status {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  align-items: flex-start;
+  padding: 0.75rem;
+  border-radius: 14px;
+  background: #f8fafc;
+  border: 1px solid color-mix(in srgb, var(--brand) 8%, transparent);
+}
+.migrate-status strong {
+  font-size: 1.05rem;
+  letter-spacing: -0.02em;
+}
+
 .biz-tabs {
   display: flex;
   flex-wrap: wrap;
@@ -277,6 +292,21 @@ button { cursor: pointer; }
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 0.55rem;
+}
+
+.migrate-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  margin-bottom: 0.9rem;
+}
+.migrate-step strong {
+  display: block;
+  font-size: 0.9rem;
+  margin-bottom: 0.15rem;
+}
+.migrate-step p {
+  margin: 0;
 }
 
 .week-cal-row {

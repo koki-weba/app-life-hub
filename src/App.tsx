@@ -14,6 +14,12 @@ import { BusinessPanel } from './business/BusinessPanel'
 import { BodyPanel } from './body/BodyPanel'
 import { useHub } from './store'
 import { ensureCoreSpaces, isLockedSpace } from './lib/ensureCoreSpaces'
+import {
+  detectLegacyKind,
+  migrationChecklist,
+  summarizeBody,
+  summarizeBusiness,
+} from './migrate/detectLegacy'
 import type { SpaceKind, TaskScope } from './types'
 import './index.css'
 
@@ -340,6 +346,8 @@ function SpaceView({ spaceId }: { spaceId: string }) {
 function SettingsView() {
   const sync = useHub((s) => s.sync)
   const spacesAll = useHub((s) => s.spaces)
+  const business = useHub((s) => s.business)
+  const body = useHub((s) => s.body)
   const addSpace = useHub((s) => s.addSpace)
   const removeSpace = useHub((s) => s.removeSpace)
   const setSyncEnabled = useHub((s) => s.setSyncEnabled)
@@ -355,14 +363,151 @@ function SettingsView() {
   const [temporary, setTemporary] = useState(true)
   const [syncIdDraft, setSyncIdDraft] = useState(sync.syncId)
   const [importMsg, setImportMsg] = useState('')
+  const [migrating, setMigrating] = useState(false)
 
   const spaces = useMemo(
     () => (spacesAll ?? []).filter((x) => !x.archived),
     [spacesAll],
   )
 
+  const checklist = useMemo(
+    () => migrationChecklist({ business, body }),
+    [business, body],
+  )
+
+  const applyLegacyFile = (parsed: Record<string, unknown>) => {
+    const kindDetected = detectLegacyKind(parsed)
+    if (kindDetected === 'business') {
+      importLegacyBusiness(parsed)
+      const s = useHub.getState()
+      const sum = summarizeBusiness(s.business)
+      setImportMsg(
+        `起業データを取り込みました（DM日数 ${sum.dmDays} / 案件 ${sum.clients} / IG ${sum.ig}）`,
+      )
+      return
+    }
+    if (kindDetected === 'body') {
+      importLegacyBody(parsed)
+      const s = useHub.getState()
+      const sum = summarizeBody(s.body)
+      setImportMsg(
+        `筋トレデータを取り込みました（体重 ${sum.weightDays}日 / カロリー ${sum.calorieDays}日 / トレ ${sum.workouts}）`,
+      )
+      return
+    }
+    if (kindDetected === 'lifehub') {
+      replaceData(parsed as never)
+      setImportMsg('Life Hubバックアップを読み込みました')
+      return
+    }
+    setImportMsg('対応していないJSONです（旧起業 / 旧体重 / Life Hubのみ）')
+  }
+
+  const readJsonFile = (file: File) => {
+    const reader = new FileReader()
+    reader.onload = () => {
+      try {
+        const parsed = JSON.parse(String(reader.result)) as Record<string, unknown>
+        applyLegacyFile(parsed)
+      } catch {
+        setImportMsg('読み込みに失敗しました')
+      }
+    }
+    reader.readAsText(file)
+  }
+
   return (
     <motion.div {...pageMotion}>
+      <section className="panel">
+        <h2>旧アプリから移行</h2>
+        <p className="muted small" style={{ marginTop: '-0.35rem', marginBottom: '0.75rem' }}>
+          旧起業アプリ・旧体重アプリのエクスポートJSONを取り込めます。同じデータはマージされ、上書きで消えません。
+        </p>
+
+        <div className="migrate-steps">
+          <div className="migrate-step">
+            <strong>1. 旧アプリでエクスポート</strong>
+            <p className="muted small">
+              起業アプリ: 設定 → エクスポート（startup-roadmap-backup-….json）
+              <br />
+              体重アプリ: 設定 → エクスポート（weight-tracker-….json）
+            </p>
+          </div>
+          <div className="migrate-step">
+            <strong>2. この画面で取り込む</strong>
+            <p className="muted small">JSONを選べば種類を自動判定します。</p>
+          </div>
+          <div className="migrate-step">
+            <strong>3. 同期してスマホでも使う</strong>
+            <p className="muted small">下の「同期」で同じ同期IDを両端末に設定してください。</p>
+          </div>
+        </div>
+
+        <div className="kpi-grid" style={{ marginBottom: '0.85rem' }}>
+          <div className="migrate-status">
+            <div className="muted small">起業データ</div>
+            <strong>{checklist.businessReady ? '取込済' : '未取込'}</strong>
+            <span className="muted small">
+              DM {checklist.biz.dmDays}日 · 案件 {checklist.biz.clients}
+            </span>
+          </div>
+          <div className="migrate-status">
+            <div className="muted small">筋トレデータ</div>
+            <strong>{checklist.bodyReady ? '取込済' : '未取込'}</strong>
+            <span className="muted small">
+              体重 {checklist.body.weightDays}日 · トレ {checklist.body.workouts}
+            </span>
+          </div>
+        </div>
+
+        <div className="row">
+          <label className="btn">
+            JSONを取り込む
+            <input
+              type="file"
+              accept="application/json,.json"
+              hidden
+              onChange={(e) => {
+                const f = e.target.files?.[0]
+                if (!f) return
+                readJsonFile(f)
+                e.target.value = ''
+              }}
+            />
+          </label>
+          <button
+            type="button"
+            className="btn ghost sm"
+            disabled={migrating}
+            onClick={async () => {
+              setMigrating(true)
+              setImportMsg('同梱の体重履歴を取得中…')
+              try {
+                const res = await fetch(`${import.meta.env.BASE_URL}migrate/weight-import.json`)
+                if (!res.ok) throw new Error('not found')
+                const parsed = (await res.json()) as Record<string, unknown>
+                importLegacyBody(parsed)
+                const sum = summarizeBody(useHub.getState().body)
+                setImportMsg(
+                  `同梱の体重履歴を取り込みました（体重 ${sum.weightDays}日）`,
+                )
+              } catch {
+                setImportMsg('同梱履歴の取得に失敗しました（ネット接続を確認）')
+              } finally {
+                setMigrating(false)
+              }
+            }}
+          >
+            同梱の体重履歴を取り込む
+          </button>
+        </div>
+        {importMsg ? (
+          <p className="muted small" style={{ marginTop: '0.7rem' }}>
+            {importMsg}
+          </p>
+        ) : null}
+      </section>
+
       <section className="panel">
         <h2>項目一覧</h2>
         <p className="muted small" style={{ marginTop: '-0.35rem', marginBottom: '0.75rem' }}>
@@ -520,6 +665,9 @@ function SettingsView() {
 
       <section className="panel">
         <h2>バックアップ</h2>
+        <p className="muted small" style={{ marginTop: '-0.35rem', marginBottom: '0.75rem' }}>
+          Life Hub全体の控えです。旧アプリ移行は上の「旧アプリから移行」を使ってください。
+        </p>
         <div className="row">
           <button
             type="button"
@@ -543,79 +691,12 @@ function SettingsView() {
               onChange={(e) => {
                 const f = e.target.files?.[0]
                 if (!f) return
-                const reader = new FileReader()
-                reader.onload = () => {
-                  try {
-                    const parsed = JSON.parse(String(reader.result))
-                    if (parsed?.version === 1 || parsed?.version === 2) replaceData(parsed)
-                    else alert('Life Hubのバックアップではありません')
-                  } catch {
-                    alert('読み込めませんでした')
-                  }
-                }
-                reader.readAsText(f)
-                e.target.value = ''
-              }}
-            />
-          </label>
-          <label className="btn sm">
-            旧起業アプリから取り込み
-            <input
-              type="file"
-              accept="application/json,.json"
-              hidden
-              onChange={(e) => {
-                const f = e.target.files?.[0]
-                if (!f) return
-                const reader = new FileReader()
-                reader.onload = () => {
-                  try {
-                    const parsed = JSON.parse(String(reader.result)) as Record<string, unknown>
-                    if (!parsed.salesLogs && !parsed.snsLogs && !parsed.clients && !parsed.igList) {
-                      setImportMsg('旧起業アプリのJSONではなさそうです')
-                      return
-                    }
-                    importLegacyBusiness(parsed)
-                    setImportMsg('旧起業データを取り込みました（起業タブで確認）')
-                  } catch {
-                    setImportMsg('読み込みに失敗しました')
-                  }
-                }
-                reader.readAsText(f)
-                e.target.value = ''
-              }}
-            />
-          </label>
-          <label className="btn sm">
-            旧体重アプリから取り込み
-            <input
-              type="file"
-              accept="application/json,.json"
-              hidden
-              onChange={(e) => {
-                const f = e.target.files?.[0]
-                if (!f) return
-                const reader = new FileReader()
-                reader.onload = () => {
-                  try {
-                    const parsed = JSON.parse(String(reader.result)) as Record<string, unknown>
-                    if (!parsed.records && !parsed.exercises && !parsed.workouts && !parsed.settings) {
-                      setImportMsg('旧体重アプリのJSONではなさそうです')
-                      return
-                    }
-                    importLegacyBody(parsed)
-                    setImportMsg('旧体重データを取り込みました（筋トレタブで確認）')
-                  } catch {
-                    setImportMsg('読み込みに失敗しました')
-                  }
-                }
-                reader.readAsText(f)
+                readJsonFile(f)
                 e.target.value = ''
               }}
             />
           </label>
         </div>
-        {importMsg ? <p className="muted small" style={{ marginTop: '0.7rem' }}>{importMsg}</p> : null}
       </section>
     </motion.div>
   )
