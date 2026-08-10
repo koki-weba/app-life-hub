@@ -1511,19 +1511,19 @@ select.input {
    Body / 筋トレ UI (reference: simple-weight-management)
    ========================================================= */
 .body-ui {
-  --body-bg: #f6f7fb;
+  --body-bg: #fafafa;
   --body-surface: #ffffff;
-  --body-surface-2: #f0f3fa;
-  --body-border: #eef0f6;
-  --body-text: #0f172a;
-  --body-sub: #64748b;
-  --body-mute: #94a3b8;
-  --body-brand: #6366f1;
-  --body-brand-deep: #4f46e5;
-  --body-grad: linear-gradient(135deg, #6366f1 0%, #8b5cf6 48%, #ec4899 100%);
-  --body-grad-soft: linear-gradient(135deg, #eef2ff 0%, #fdf2f8 100%);
+  --body-surface-2: #f8f8f8;
+  --body-border: #f0eaea;
+  --body-text: #1a1a1a;
+  --body-sub: #6b6b6b;
+  --body-mute: #9a9a9a;
+  --body-brand: #dc2626;
+  --body-brand-deep: #b91c1c;
+  --body-grad: linear-gradient(135deg, #ef4444 0%, #dc2626 55%, #b91c1c 100%);
+  --body-grad-soft: linear-gradient(135deg, #fef2f2 0%, #fff7f7 100%);
   --body-shadow: 0 1px 3px rgba(15, 23, 42, 0.05), 0 1px 2px rgba(15, 23, 42, 0.04);
-  --body-shadow-brand: 0 8px 24px rgba(99, 102, 241, 0.32);
+  --body-shadow-brand: 0 8px 24px rgba(220, 38, 38, 0.28);
   --body-radius: 18px;
   --body-radius-sm: 12px;
 }
@@ -1534,7 +1534,7 @@ select.input {
   margin-bottom: 0.95rem;
   padding: 0.28rem;
   border-radius: 999px;
-  background: #eef1f7;
+  background: #f3f3f3;
   border: 1px solid var(--body-border);
   overflow-x: auto;
 }
@@ -1562,7 +1562,7 @@ select.input {
   margin: 0 0 0.7rem;
   padding: 0.65rem 0.85rem;
   border-radius: var(--body-radius-sm);
-  background: #eef2ff;
+  background: #fef2f2;
   color: var(--body-brand-deep);
   font-size: 0.85rem;
   font-weight: 600;
@@ -1575,7 +1575,7 @@ select.input {
   margin-bottom: 0.75rem;
   padding: 0.22rem;
   border-radius: 999px;
-  background: #eef1f7;
+  background: #f3f3f3;
   border: 1px solid var(--body-border);
 }
 .body-phase-chip {
@@ -1604,7 +1604,7 @@ select.input {
   margin-bottom: 0.75rem;
 }
 .body-card.is-focus {
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.18), var(--body-shadow);
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.16), var(--body-shadow);
 }
 .body-card-head {
   display: flex;
@@ -1626,8 +1626,8 @@ select.input {
   align-items: center;
   padding: 0.28rem 0.6rem;
   border-radius: 999px;
-  background: #e8f0fe;
-  color: #3b82f6;
+  background: #fef2f2;
+  color: #dc2626;
   font-size: 0.72rem;
   font-weight: 700;
   white-space: nowrap;
@@ -1664,7 +1664,7 @@ select.input {
   inset: auto auto -45% -25%;
   width: 200px;
   height: 200px;
-  background: radial-gradient(circle, rgba(236, 72, 153, 0.28) 0%, transparent 65%);
+  background: radial-gradient(circle, rgba(220, 38, 38, 0.28) 0%, transparent 65%);
   pointer-events: none;
 }
 .body-hero-top {
@@ -1818,7 +1818,7 @@ select.input {
 .body-cal-bar-wrap { flex: 1; min-width: 0; }
 .body-cal-bar {
   height: 10px;
-  background: #eef1f7;
+  background: #f1f1f1;
   border-radius: 999px;
   overflow: hidden;
   margin-bottom: 0.5rem;
@@ -1883,13 +1883,13 @@ select.input {
   font-variant-numeric: tabular-nums;
 }
 .body-day-cell.is-today {
-  border-color: #93c5fd;
-  background: #eff6ff;
+  border-color: #fca5a5;
+  background: #fef2f2;
 }
 .body-day-cell.is-selected {
   border-color: var(--body-brand);
-  background: #eef2ff;
-  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.12);
+  background: #fef2f2;
+  box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.12);
 }
 .body-day-cell.is-today .body-day-name,
 .body-day-cell.is-selected .body-day-name {
@@ -1929,7 +1929,7 @@ select.input {
   border-radius: 12px;
   display: grid;
   place-items: center;
-  background: #eef2ff;
+  background: #fef2f2;
   color: var(--body-brand);
   flex-shrink: 0;
 }
@@ -1988,8 +1988,8 @@ select.input {
 .body-input:focus,
 .body-date-input:focus {
   outline: none;
-  border-color: #a5b4fc;
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+  border-color: #fca5a5;
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.14);
   background: #fff;
 }
 
@@ -2016,7 +2016,7 @@ select.input {
 .body-btn-secondary {
   width: 100%;
   padding: 0.75rem 1rem;
-  background: #eef2ff;
+  background: #fef2f2;
   color: var(--body-brand-deep);
   margin-top: 0.15rem;
 }
@@ -2167,7 +2167,7 @@ select.input {
   margin-bottom: 0.85rem;
   padding: 0.28rem;
   border-radius: 999px;
-  background: #eef1f7;
+  background: #f3f3f3;
   border: 1px solid var(--body-border);
 }
 .body-seg--scroll {
@@ -2202,24 +2202,25 @@ select.input {
   border-radius: 999px;
   font-size: 0.7rem;
   font-weight: 700;
-  background: #e0f2fe;
-  color: #0284c7;
+  background: #f3f3f3;
+  color: var(--body-sub);
 }
 .body-trend--empty {
-  background: #e0f2fe;
-  color: #0284c7;
+  background: #f3f3f3;
+  color: var(--body-sub);
 }
 .body-trend--ok {
-  background: #eef2ff;
+  background: #fef2f2;
   color: var(--body-brand-deep);
 }
 .body-trend--up {
-  background: #ecfdf5;
-  color: #059669;
+  background: #fef2f2;
+  color: #b91c1c;
 }
 .body-trend--down {
-  background: #fef2f2;
+  background: #fff;
   color: #dc2626;
+  border: 1px solid #fecaca;
 }
 
 .body-chart-wrap {

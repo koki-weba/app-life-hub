@@ -23,9 +23,9 @@ const RANGE_OPTIONS: { key: RangeKey; label: string }[] = [
   { key: 'all', label: '全期間' },
 ]
 
-const DAILY_ORANGE = '#f97316'
-const AVG_PURPLE = '#6366f1'
-const VOLUME_TEAL = '#14b8a6'
+const DAILY_RED = '#dc2626'
+const AVG_RED = '#991b1b'
+const VOLUME_RED = '#ef4444'
 
 function rangeStart(range: RangeKey, today: string, earliest: string | null) {
   if (range === 'all') return earliest
@@ -178,7 +178,7 @@ function ChartBlock({
                   type="linear"
                   dataKey="avg7"
                   name="avg7"
-                  stroke={AVG_PURPLE}
+                  stroke={AVG_RED}
                   strokeWidth={2}
                   dot={false}
                   connectNulls
@@ -273,28 +273,28 @@ export function BodyCharts() {
         title="体重の推移"
         unit="kg"
         data={weightData}
-        color={DAILY_ORANGE}
+        color={DAILY_RED}
         showAvg={showAvg}
       />
       <ChartBlock
         title="カロリーの推移"
         unit="kcal"
         data={calorieData}
-        color={DAILY_ORANGE}
+        color={DAILY_RED}
         showAvg={showAvg}
       />
       <ChartBlock
         title="総ボリュームの推移"
         unit="kg"
         data={volumeData}
-        color={VOLUME_TEAL}
+        color={VOLUME_RED}
         showAvg={false}
       />
       <ChartBlock
         title="種目別重量の推移"
         unit="kg"
         data={exerciseData}
-        color={AVG_PURPLE}
+        color={AVG_RED}
         showAvg={false}
         extra={
           <label className="body-field body-chart-ex">
