@@ -1,4 +1,4 @@
-export type SpaceKind = 'business' | 'body' | 'custom'
+export type SpaceKind = 'business' | 'body' | 'university' | 'driving' | 'custom'
 
 export type TaskScope = 'today' | 'week'
 
@@ -114,8 +114,21 @@ export interface BodySettings {
   height: number | null
   startWeight: number | null
   targetWeight: number | null
+  /** 目標期間の開始日 (yyyy-MM-dd) */
+  targetStartDate: string | null
+  /** 目標の達成期限 (yyyy-MM-dd) */
   targetDate: string | null
   dailyCalGoal: number
+  /** 減量期 / 維持期 / 増量期 */
+  phase: BodyPhase
+}
+
+export type BodyPhase = 'cut' | 'maintain' | 'bulk'
+
+export const BODY_PHASE_LABEL: Record<BodyPhase, string> = {
+  cut: '減量期',
+  maintain: '維持期',
+  bulk: '増量期',
 }
 
 export interface DayRecord {
@@ -153,6 +166,75 @@ export interface BodyData {
   workouts: Workout[]
 }
 
+/** 大学・出席管理（Excel 出席管理相当） */
+export type AttendanceMark = 'present' | 'absent' | null
+
+/** 学年・学期（現在データは 3年前期） */
+export type UniversityTermId = 'y3_zenki' | 'y3_kouki' | 'y4_zenki' | 'y4_kouki'
+
+export const UNIVERSITY_TERM_LABEL: Record<UniversityTermId, string> = {
+  y3_zenki: '3年前期',
+  y3_kouki: '3年後期',
+  y4_zenki: '4年前期',
+  y4_kouki: '4年後期',
+}
+
+export const UNIVERSITY_TERM_IDS: UniversityTermId[] = [
+  'y3_zenki',
+  'y3_kouki',
+  'y4_zenki',
+  'y4_kouki',
+]
+
+export interface UniversityCourse {
+  id: string
+  termId: UniversityTermId
+  weekday: string
+  period: string
+  name: string
+  /** 第1回〜第N回（空欄=未実施） */
+  sessions: AttendanceMark[]
+}
+
+export interface UniversityData {
+  sessionCount: number
+  /** 表示・編集中の学期 */
+  activeTermId: UniversityTermId
+  /** 良好判定の下限（既定 0.8） */
+  goodRate: number
+  /** 注意判定の下限（既定 0.6） */
+  cautionRate: number
+  /** 奨学金取り消しライン（既定 0.8） */
+  scholarshipCancelRate: number
+  /** 目標出席率（既定 0.9） */
+  minAttendanceRate: number
+  courses: UniversityCourse[]
+}
+
+/** 自動車学校・免許交付チェック（Excel チェックシート相当） */
+export interface DrivingItem {
+  id: string
+  label: string
+  done: boolean
+}
+
+export interface DrivingSection {
+  id: string
+  title: string
+  note?: string
+  items: DrivingItem[]
+}
+
+export interface DrivingData {
+  title: string
+  footnote: string
+  /** 取組開始日 (yyyy-MM-dd) */
+  startDate: string | null
+  /** 免許取得などの達成期限 (yyyy-MM-dd) */
+  targetDate: string | null
+  sections: DrivingSection[]
+}
+
 export interface AppData {
   version: 2
   spaces: Space[]
@@ -160,6 +242,8 @@ export interface AppData {
   metrics: MetricSeries[]
   business: BusinessData
   body: BodyData
+  university: UniversityData
+  driving: DrivingData
   sync: SyncState
   updatedAt: number
 }

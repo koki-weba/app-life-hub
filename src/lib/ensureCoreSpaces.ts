@@ -27,10 +27,10 @@ const PRESET_SPACES: {
   color: string
 }[] = [
   { key: 'business', name: '起業', kind: 'business', color: '#2563eb' },
-  { key: 'university', name: '大学', kind: 'custom', color: '#16a34a' },
+  { key: 'university', name: '大学', kind: 'university', color: '#16a34a' },
   { key: 'body', name: '筋トレ', kind: 'body', color: '#dc2626' },
   { key: 'creative', name: '趣味', kind: 'custom', color: '#eab308' },
-  { key: 'driving', name: '自動車学校', kind: 'custom', color: '#84cc16' },
+  { key: 'driving', name: '自動車学校', kind: 'driving', color: '#84cc16' },
 ]
 
 function makeTasks(spaceId: string, defs: Omit<Task, 'id' | 'spaceId' | 'createdAt'>[]): Task[] {
@@ -46,6 +46,8 @@ function spaceKey(sp: Space): string | undefined {
   if (sp.key) return sp.key
   if (sp.kind === 'business') return 'business'
   if (sp.kind === 'body') return 'body'
+  if (sp.kind === 'university') return 'university'
+  if (sp.kind === 'driving') return 'driving'
   if (sp.name === '大学') return 'university'
   if (sp.name === '創作' || sp.name === '趣味') return 'creative'
   if (sp.name === '自動車学校') return 'driving'
@@ -119,8 +121,17 @@ export function ensureCoreSpaces(
 
   const business = byKey().get('business')
   const body = byKey().get('body')
-  const bodyIds = new Set(spaces.filter((s) => s.kind === 'body').map((s) => s.id))
-  tasks = tasks.filter((t) => !bodyIds.has(t.spaceId))
+  const hideModuleKeys = new Set(['body', 'university', 'driving', 'creative'])
+  const hideTaskIds = new Set(
+    spaces
+      .filter((s) => {
+        const k = spaceKey(s)
+        return (k && hideModuleKeys.has(k)) || hideModuleKeys.has(s.kind)
+      })
+      .map((s) => s.id),
+  )
+  tasks = tasks.filter((t) => !hideTaskIds.has(t.spaceId))
+  metrics = metrics.filter((m) => !hideTaskIds.has(m.spaceId))
 
   if (business) metrics = syncDmMetricPoints(data.business, metrics, business.id)
   if (body) metrics = syncBodyMetricPoints(data.body, metrics, body.id)

@@ -4,6 +4,7 @@ import { createSeedData } from './seed'
 import { uid } from './lib/id'
 import type {
   AppData,
+  AttendanceMark,
   BodyData,
   BodySettings,
   BusinessData,
@@ -17,6 +18,7 @@ import type {
   SnsWeekLog,
   Task,
   TaskScope,
+  UniversityTermId,
   Workout,
 } from './types'
 import { pullRemote, pushRemote, ensureSyncId } from './sync/puterSync'
@@ -34,6 +36,19 @@ import {
   mergeBody,
   syncBodyMetricPoints,
 } from './body/helpers'
+import {
+  BAKED_UNIVERSITY,
+  emptyUniversity,
+  hydrateUniversity,
+  mergeUniversity,
+  SESSION_COUNT,
+} from './university/helpers'
+import {
+  BAKED_DRIVING,
+  emptyDriving,
+  hydrateDriving,
+  mergeDriving,
+} from './driving/helpers'
 import { BAKED_BODY, BAKED_BUSINESS } from './data/bakedLegacy'
 import { ensureCoreSpaces, isLockedSpace } from './lib/ensureCoreSpaces'
 
@@ -45,6 +60,7 @@ type HubState = AppData & {
   setView: (view: HubState['activeView'], spaceId?: string | null) => void
   toggleTask: (id: string) => void
   addTask: (spaceId: string, title: string, scope: TaskScope) => void
+  deleteTask: (id: string) => void
   addSpace: (name: string, kind: SpaceKind, temporary?: boolean) => void
   removeSpace: (id: string) => void
   reorderSpaces: (orderedIds: string[]) => void
@@ -59,11 +75,20 @@ type HubState = AppData & {
   deleteIg: (id: string) => void
   saveDayWeight: (date: string, weight: number) => void
   saveDayCalories: (date: string, calories: number) => void
-  saveBodySettings: (settings: BodySettings) => void
+  saveBodySettings: (settings: Partial<BodySettings>) => void
   saveExercise: (ex: { id?: string; name: string; muscle: MuscleGroup }) => void
   deleteExercise: (id: string) => void
   saveWorkout: (workout: Omit<Workout, 'id'> & { id?: string }) => void
   deleteWorkout: (date: string) => void
+  setAttendance: (courseId: string, sessionIndex: number, mark: AttendanceMark) => void
+  setActiveUniversityTerm: (termId: UniversityTermId) => void
+  addUniversityCourse: (weekday: string, period: string, name: string) => void
+  deleteUniversityCourse: (courseId: string) => void
+  toggleDrivingItem: (sectionId: string, itemId: string) => void
+  setDrivingDates: (dates: {
+    startDate?: string | null
+    targetDate?: string | null
+  }) => void
   setSyncEnabled: (enabled: boolean) => void
   rotateSyncId: () => void
   setSyncId: (id: string) => void
@@ -131,10 +156,19 @@ export const useHub = create<HubState>()(
           set((s) => ({ ...stamp(), tasks: [task, ...s.tasks] }))
         },
 
+        deleteTask: (id) =>
+          set((s) => ({
+            ...stamp(),
+            tasks: s.tasks.filter((t) => t.id !== id),
+          })),
+
         addSpace: (name, kind, temporary = false) => {
           set((s) => {
             if (
-              (kind === 'business' || kind === 'body') &&
+              (kind === 'business' ||
+                kind === 'body' ||
+                kind === 'university' ||
+                kind === 'driving') &&
               s.spaces.some((x) => x.kind === kind && !x.archived)
             ) {
               return s
@@ -143,9 +177,26 @@ export const useHub = create<HubState>()(
               id: uid(),
               name:
                 name.trim() ||
-                (kind === 'business' ? '起業' : kind === 'body' ? '筋トレ' : '新しい項目'),
+                (kind === 'business'
+                  ? '起業'
+                  : kind === 'body'
+                    ? '筋トレ'
+                    : kind === 'university'
+                      ? '大学'
+                      : kind === 'driving'
+                        ? '自動車学校'
+                        : '新しい項目'),
               kind,
-              color: kind === 'business' ? '#2563eb' : kind === 'body' ? '#dc2626' : '#64748b',
+              color:
+                kind === 'business'
+                  ? '#2563eb'
+                  : kind === 'body'
+                    ? '#dc2626'
+                    : kind === 'university'
+                      ? '#16a34a'
+                      : kind === 'driving'
+                        ? '#84cc16'
+                        : '#64748b',
               temporary,
               createdAt: Date.now(),
             }
@@ -429,6 +480,93 @@ export const useHub = create<HubState>()(
             },
           })),
 
+        setAttendance: (courseId, sessionIndex, mark) =>
+          set((s) => ({
+            ...stamp(),
+            university: {
+              ...s.university,
+              courses: s.university.courses.map((c) => {
+                if (c.id !== courseId) return c
+                const sessions = [...c.sessions]
+                if (sessionIndex < 0 || sessionIndex >= sessions.length) return c
+                sessions[sessionIndex] = mark
+                return { ...c, sessions }
+              }),
+            },
+          })),
+
+        setActiveUniversityTerm: (termId) =>
+          set((s) => ({
+            ...stamp(),
+            university: { ...s.university, activeTermId: termId },
+          })),
+
+        addUniversityCourse: (weekday, period, name) =>
+          set((s) => {
+            const trimmed = name.trim()
+            if (!trimmed) return s
+            const count = s.university.sessionCount || SESSION_COUNT
+            const termId = s.university.activeTermId || 'y3_zenki'
+            return {
+              ...stamp(),
+              university: {
+                ...s.university,
+                courses: [
+                  ...s.university.courses,
+                  {
+                    id: uid(),
+                    termId,
+                    weekday,
+                    period,
+                    name: trimmed,
+                    sessions: Array.from({ length: count }, () => null),
+                  },
+                ],
+              },
+            }
+          }),
+
+        deleteUniversityCourse: (courseId) =>
+          set((s) => ({
+            ...stamp(),
+            university: {
+              ...s.university,
+              courses: s.university.courses.filter((c) => c.id !== courseId),
+            },
+          })),
+
+        toggleDrivingItem: (sectionId, itemId) =>
+          set((s) => ({
+            ...stamp(),
+            driving: {
+              ...s.driving,
+              sections: s.driving.sections.map((sec) =>
+                sec.id !== sectionId
+                  ? sec
+                  : {
+                      ...sec,
+                      items: sec.items.map((it) =>
+                        it.id === itemId ? { ...it, done: !it.done } : it,
+                      ),
+                    },
+              ),
+            },
+          })),
+
+        setDrivingDates: (dates) =>
+          set((s) => ({
+            ...stamp(),
+            driving: {
+              ...s.driving,
+              ...(dates.startDate !== undefined
+                ? { startDate: dates.startDate ? dates.startDate.slice(0, 10) : null }
+                : {}),
+              ...(dates.targetDate !== undefined
+                ? { targetDate: dates.targetDate ? dates.targetDate.slice(0, 10) : null }
+                : {}),
+            },
+          })),
+
         setSyncEnabled: (enabled) =>
           set((s) => ({
             ...stamp(),
@@ -476,6 +614,8 @@ export const useHub = create<HubState>()(
               metrics: get().metrics,
               business: get().business,
               body: get().body,
+              university: get().university,
+              driving: get().driving,
               sync: get().sync,
               updatedAt: get().updatedAt,
             }
@@ -485,6 +625,12 @@ export const useHub = create<HubState>()(
                 version: 2,
                 business: remote.business ?? emptyBusiness(),
                 body: remote.body ? hydrateBody(remote.body) : emptyBody(),
+                university: remote.university
+                  ? hydrateUniversity(remote.university)
+                  : emptyUniversity(),
+                driving: remote.driving
+                  ? hydrateDriving(remote.driving)
+                  : emptyDriving(),
                 sync: {
                   ...get().sync,
                   syncId,
@@ -522,6 +668,10 @@ export const useHub = create<HubState>()(
             version: 2,
             business: data.business ?? emptyBusiness(),
             body: data.body ? hydrateBody(data.body) : emptyBody(),
+            university: data.university
+              ? hydrateUniversity(data.university)
+              : emptyUniversity(),
+            driving: data.driving ? hydrateDriving(data.driving) : emptyDriving(),
             activeView: 'home',
             activeSpaceId: null,
           }),
@@ -535,6 +685,8 @@ export const useHub = create<HubState>()(
             metrics: s.metrics,
             business: s.business,
             body: s.body,
+            university: s.university,
+            driving: s.driving,
             sync: s.sync,
             updatedAt: s.updatedAt,
           }
@@ -551,6 +703,8 @@ export const useHub = create<HubState>()(
         metrics: s.metrics,
         business: s.business,
         body: s.body,
+        university: s.university,
+        driving: s.driving,
         sync: s.sync,
         updatedAt: s.updatedAt,
       }),
@@ -563,6 +717,17 @@ export const useHub = create<HubState>()(
               sp.name === 'ボディメイク' || sp.name === 'ボディ' ? '筋トレ' : sp.name
             return { ...sp, name, color: '#dc2626' }
           }
+          if (sp.kind === 'university' || sp.key === 'university' || sp.name === '大学') {
+            return { ...sp, kind: 'university' as const, color: '#16a34a', name: '大学' }
+          }
+          if (sp.kind === 'driving' || sp.key === 'driving' || sp.name === '自動車学校') {
+            return {
+              ...sp,
+              kind: 'driving' as const,
+              color: '#84cc16',
+              name: '自動車学校',
+            }
+          }
           return sp
         })
         const business = mergeBusiness(
@@ -572,6 +737,16 @@ export const useHub = create<HubState>()(
         const body = mergeBody(
           p.body ? hydrateBody(p.body) : current.body ?? emptyBody(),
           BAKED_BODY,
+        )
+        const university = mergeUniversity(
+          p.university
+            ? hydrateUniversity(p.university)
+            : current.university ?? emptyUniversity(),
+          BAKED_UNIVERSITY,
+        )
+        const driving = mergeDriving(
+          p.driving ? hydrateDriving(p.driving) : current.driving ?? emptyDriving(),
+          BAKED_DRIVING,
         )
         const tasks = Array.isArray(p.tasks) ? p.tasks : current.tasks
         const metrics = Array.isArray(p.metrics) ? p.metrics : current.metrics
@@ -591,6 +766,8 @@ export const useHub = create<HubState>()(
           metrics: ensured.metrics,
           business,
           body,
+          university,
+          driving,
           sync: { ...current.sync, ...(p.sync ?? {}) },
         }
       },
@@ -598,6 +775,14 @@ export const useHub = create<HubState>()(
         if (!state) return
         state.business = mergeBusiness(state.business ?? emptyBusiness(), BAKED_BUSINESS)
         state.body = mergeBody(state.body ? hydrateBody(state.body) : emptyBody(), BAKED_BODY)
+        state.university = mergeUniversity(
+          state.university ? hydrateUniversity(state.university) : emptyUniversity(),
+          BAKED_UNIVERSITY,
+        )
+        state.driving = mergeDriving(
+          state.driving ? hydrateDriving(state.driving) : emptyDriving(),
+          BAKED_DRIVING,
+        )
         const ensured = ensureCoreSpaces(state)
         state.spaces = ensured.spaces
         state.tasks = ensured.tasks

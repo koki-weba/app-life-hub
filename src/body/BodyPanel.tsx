@@ -1,13 +1,17 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useHub } from '../store'
 import type { MuscleGroup, WorkoutEntry, WorkoutSet } from '../types'
+import { BODY_PHASE_LABEL } from '../types'
 import { BodyCharts } from './BodyCharts'
 import {
+  BODY_PHASES,
   MUSCLE_LABELS,
   est1rm,
+  formatTargetDate,
   goalProgress,
   latestWeight,
   setVolume,
+  targetDeadlineInfo,
   todayStr,
   weekCalSum,
   weekDates,
@@ -49,6 +53,7 @@ export function BodyPanel() {
     height: body.settings.height?.toString() ?? '',
     startWeight: body.settings.startWeight?.toString() ?? '',
     targetWeight: body.settings.targetWeight?.toString() ?? '',
+    targetStartDate: body.settings.targetStartDate ?? '',
     targetDate: body.settings.targetDate ?? '',
     dailyCalGoal: String(body.settings.dailyCalGoal || 2000),
   }))
@@ -60,6 +65,21 @@ export function BodyPanel() {
   const weekSum = weekCalSum(body)
   const weekBudget = (body.settings.dailyCalGoal || 2000) * 7
   const weekRemain = weekBudget - weekSum
+  const deadline = targetDeadlineInfo(body.settings.targetDate)
+
+  useEffect(() => {
+    if (tab !== 'goals') return
+    setSettingsForm({
+      height: body.settings.height?.toString() ?? '',
+      startWeight: body.settings.startWeight?.toString() ?? '',
+      targetWeight: body.settings.targetWeight?.toString() ?? '',
+      targetStartDate: body.settings.targetStartDate ?? '',
+      targetDate: body.settings.targetDate ?? '',
+      dailyCalGoal: String(body.settings.dailyCalGoal || 2000),
+    })
+    // 目標タブを開いたタイミングで最新値を反映
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tab])
 
   const workoutForDate = useMemo(
     () => body.workouts.find((w) => w.date === trainDate) ?? null,
@@ -132,7 +152,26 @@ export function BodyPanel() {
       {tab === 'record' && (
         <>
           <section className="panel">
-            <h2>きょうの状況</h2>
+            <div className="body-phase-head">
+              <h2>きょうの状況</h2>
+              <div className="body-phase" role="group" aria-label="フェーズ">
+                {BODY_PHASES.map((phase) => (
+                  <button
+                    key={phase}
+                    type="button"
+                    className="body-phase-btn"
+                    data-active={body.settings.phase === phase}
+                    onClick={() =>
+                      saveBodySettings({
+                        phase,
+                      })
+                    }
+                  >
+                    {BODY_PHASE_LABEL[phase]}
+                  </button>
+                ))}
+              </div>
+            </div>
             <div className="kpi-grid">
               <div className="metric-card">
                 <div className="muted small">現在体重</div>
@@ -149,6 +188,26 @@ export function BodyPanel() {
               <div className="metric-card">
                 <div className="muted small">残予算</div>
                 <strong>{weekRemain.toLocaleString()} kcal</strong>
+              </div>
+            </div>
+            <div className="body-goal-strip">
+              <div className="body-goal-item">
+                <span className="muted small">目標体重</span>
+                <strong>
+                  {body.settings.targetWeight != null
+                    ? `${body.settings.targetWeight} kg`
+                    : '未設定'}
+                </strong>
+              </div>
+              <div className="body-goal-item">
+                <span className="muted small">期間</span>
+                <strong data-deadline={deadline.status}>
+                  {body.settings.targetStartDate || body.settings.targetDate
+                    ? `${formatTargetDate(body.settings.targetStartDate)} → ${formatTargetDate(body.settings.targetDate)}${
+                        body.settings.targetDate ? ` · ${deadline.label}` : ''
+                      }`
+                    : '未設定'}
+                </strong>
               </div>
             </div>
             <div className="week-cal-row" style={{ marginTop: '0.85rem' }}>
@@ -579,29 +638,59 @@ export function BodyPanel() {
               }
             />
           </label>
-          <label className="field">
-            <span>目標体重 (kg)</span>
-            <input
-              className="input"
-              inputMode="decimal"
-              value={settingsForm.targetWeight}
-              onChange={(e) =>
-                setSettingsForm((f) => ({ ...f, targetWeight: e.target.value }))
-              }
-            />
-          </label>
-          <label className="field">
-            <span>目標日</span>
-            <input
-              className="input"
-              type="date"
-              value={settingsForm.targetDate}
-              onChange={(e) =>
-                setSettingsForm((f) => ({ ...f, targetDate: e.target.value }))
-              }
-            />
-          </label>
-          <label className="field">
+
+          <div className="body-goal-fields">
+            <div className="body-goal-fields-label">目標体重と期間</div>
+            <label className="field">
+              <span>目標体重 (kg)</span>
+              <input
+                className="input"
+                inputMode="decimal"
+                placeholder="例: 60.0"
+                value={settingsForm.targetWeight}
+                onChange={(e) =>
+                  setSettingsForm((f) => ({ ...f, targetWeight: e.target.value }))
+                }
+              />
+            </label>
+            <div className="row" style={{ marginBottom: 0 }}>
+              <label className="field" style={{ flex: 1, marginBottom: 0 }}>
+                <span>開始日</span>
+                <input
+                  className="input"
+                  type="date"
+                  value={settingsForm.targetStartDate}
+                  onChange={(e) =>
+                    setSettingsForm((f) => ({ ...f, targetStartDate: e.target.value }))
+                  }
+                />
+              </label>
+              <label className="field" style={{ flex: 1, marginBottom: 0 }}>
+                <span>達成期限</span>
+                <input
+                  className="input"
+                  type="date"
+                  value={settingsForm.targetDate}
+                  onChange={(e) =>
+                    setSettingsForm((f) => ({ ...f, targetDate: e.target.value }))
+                  }
+                />
+              </label>
+            </div>
+            <p className="muted small" style={{ margin: '0.55rem 0 0' }}>
+              {settingsForm.targetWeight.trim()
+                ? settingsForm.targetDate
+                  ? `目標 ${settingsForm.targetWeight} kg を ${
+                      settingsForm.targetStartDate
+                        ? `${formatTargetDate(settingsForm.targetStartDate)} から `
+                        : ''
+                    }${formatTargetDate(settingsForm.targetDate)} までに達成`
+                  : '開始日と達成期限を設定すると、ホームのゲージに反映されます'
+                : '目標体重に合わせて開始日・達成期限を設定できます'}
+            </p>
+          </div>
+
+          <label className="field" style={{ marginTop: '0.9rem' }}>
             <span>1日カロリー目標 (kcal)</span>
             <input
               className="input"
@@ -624,6 +713,7 @@ export function BodyPanel() {
                 height: num(settingsForm.height),
                 startWeight: num(settingsForm.startWeight),
                 targetWeight: num(settingsForm.targetWeight),
+                targetStartDate: settingsForm.targetStartDate || null,
                 targetDate: settingsForm.targetDate || null,
                 dailyCalGoal: Math.max(1, Number(settingsForm.dailyCalGoal) || 2000),
               })

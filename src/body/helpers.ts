@@ -2,6 +2,7 @@ import { addDays, format, parseISO, startOfWeek } from 'date-fns'
 import type {
   AppData,
   BodyData,
+  BodyPhase,
   BodySettings,
   DayRecord,
   Exercise,
@@ -10,6 +11,10 @@ import type {
   WorkoutSet,
 } from '../types'
 import { uid } from '../lib/id'
+import { normalizeDateStr } from '../lib/deadline'
+
+export type { DeadlineStatus } from '../lib/deadline'
+export { formatTargetDate, targetDeadlineInfo } from '../lib/deadline'
 
 export const MUSCLE_LABELS: Record<MuscleGroup, string> = {
   chest: '胸',
@@ -19,6 +24,13 @@ export const MUSCLE_LABELS: Record<MuscleGroup, string> = {
   arms: '腕',
   core: '体幹',
   other: 'その他',
+}
+
+export const BODY_PHASES: BodyPhase[] = ['cut', 'maintain', 'bulk']
+
+export function normalizePhase(value: unknown): BodyPhase {
+  if (value === 'cut' || value === 'maintain' || value === 'bulk') return value
+  return 'maintain'
 }
 
 export const SEED_EXERCISES: Exercise[] = [
@@ -35,8 +47,10 @@ export function emptyBodySettings(): BodySettings {
     height: null,
     startWeight: null,
     targetWeight: null,
+    targetStartDate: null,
     targetDate: null,
     dailyCalGoal: 2000,
+    phase: 'maintain',
   }
 }
 
@@ -172,6 +186,9 @@ export function hydrateBody(parsed: Partial<BodyData> | Record<string, unknown>)
     ...((parsed.settings as BodySettings) || {}),
   }
   if (!settings.dailyCalGoal || settings.dailyCalGoal < 1) settings.dailyCalGoal = 2000
+  settings.phase = normalizePhase(settings.phase)
+  settings.targetStartDate = normalizeDateStr(settings.targetStartDate)
+  settings.targetDate = normalizeDateStr(settings.targetDate)
   let exercises = normalizeExercises(parsed.exercises)
   if (!exercises.length) exercises = SEED_EXERCISES.map((e) => ({ ...e }))
   return {
@@ -221,6 +238,13 @@ export function mergeBody(existing: BodyData, incoming: BodyData): BodyData {
         Object.entries(incoming.settings).filter(([, v]) => v != null && v !== ''),
       ),
       dailyCalGoal: incoming.settings.dailyCalGoal || existing.settings.dailyCalGoal,
+      phase: normalizePhase(existing.settings.phase ?? incoming.settings.phase),
+      targetStartDate:
+        normalizeDateStr(existing.settings.targetStartDate) ??
+        normalizeDateStr(incoming.settings.targetStartDate),
+      targetDate:
+        normalizeDateStr(existing.settings.targetDate) ??
+        normalizeDateStr(incoming.settings.targetDate),
     },
     records,
     exercises: [...exercisesById.values()],

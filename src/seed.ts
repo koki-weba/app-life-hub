@@ -2,6 +2,12 @@ import type { AppData, Task } from './types'
 import { mergeBusiness, syncDmMetricPoints } from './business/helpers'
 import { emptyBusiness } from './business/helpers'
 import { emptyBody, mergeBody, syncBodyMetricPoints } from './body/helpers'
+import {
+  BAKED_UNIVERSITY,
+  emptyUniversity,
+  mergeUniversity,
+} from './university/helpers'
+import { BAKED_DRIVING, emptyDriving, mergeDriving } from './driving/helpers'
 import { createDefaultSpaces } from './lib/ensureCoreSpaces'
 import { BAKED_BODY, BAKED_BUSINESS } from './data/bakedLegacy'
 import { uid } from './lib/id'
@@ -15,6 +21,8 @@ export function createSeedData(): AppData {
 
   const business = mergeBusiness(emptyBusiness(), BAKED_BUSINESS)
   const body = mergeBody(emptyBody(), BAKED_BODY)
+  const university = mergeUniversity(emptyUniversity(), BAKED_UNIVERSITY)
+  const driving = mergeDriving(emptyDriving(), BAKED_DRIVING)
 
   const tasks: Task[] = [
     {
@@ -53,6 +61,8 @@ export function createSeedData(): AppData {
     metrics,
     business,
     body,
+    university,
+    driving,
     sync: {
       enabled: false,
       syncId: '',

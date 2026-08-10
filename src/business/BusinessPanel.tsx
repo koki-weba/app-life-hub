@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import { useHub } from '../store'
 import type { Client, ClientStatus, SnsWeekLog } from '../types'
 import { CLIENT_STATUS_LABEL } from '../types'
+import { BusinessPlanPanel } from './BusinessPlanPanel'
 import {
   dmCountOn,
   dmCountThisWeek,
@@ -10,7 +11,7 @@ import {
   weekRangeLabel,
 } from './helpers'
 
-type Tab = 'dm' | 'week' | 'clients' | 'ig'
+type Tab = 'dm' | 'week' | 'clients' | 'ig' | 'plan'
 
 const emptySns = (): Omit<SnsWeekLog, 'id'> => ({
   weekStart: sundayOf(todayStr()),
@@ -78,6 +79,7 @@ export function BusinessPanel() {
             ['week', '週次'],
             ['clients', '案件'],
             ['ig', 'IGリスト'],
+            ['plan', '計画'],
           ] as const
         ).map(([k, label]) => (
           <button
@@ -445,6 +447,8 @@ export function BusinessPanel() {
           </section>
         </>
       )}
+
+      {tab === 'plan' && <BusinessPlanPanel />}
 
       {tab === 'ig' && (
         <>

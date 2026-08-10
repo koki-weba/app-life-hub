@@ -1,4 +1,4 @@
-import { AnimatePresence, Reorder, motion } from 'framer-motion'
+import { AnimatePresence, motion } from 'framer-motion'
 import {
   CartesianGrid,
   Legend,
@@ -12,19 +12,41 @@ import {
 import { Component, useEffect, useMemo, useState, type ErrorInfo, type ReactNode } from 'react'
 import { BusinessPanel } from './business/BusinessPanel'
 import { BodyPanel } from './body/BodyPanel'
+import { UniversityPanel } from './university/UniversityPanel'
+import { DrivingPanel } from './driving/DrivingPanel'
+import { BottomNav } from './BottomNav'
 import { useHub } from './store'
 import { ensureCoreSpaces, isLockedSpace } from './lib/ensureCoreSpaces'
 import { BAKED_BODY, BAKED_BUSINESS } from './data/bakedLegacy'
 import { emptyBusiness, mergeBusiness } from './business/helpers'
 import { emptyBody, hydrateBody, mergeBody } from './body/helpers'
+import {
+  BAKED_UNIVERSITY,
+  emptyUniversity,
+  hydrateUniversity,
+  mergeUniversity,
+} from './university/helpers'
+import {
+  BAKED_DRIVING,
+  emptyDriving,
+  hydrateDriving,
+  mergeDriving,
+} from './driving/helpers'
 import type { SpaceKind, TaskScope } from './types'
+import {
+  deadlineApproachRatio,
+  formatTargetDate,
+  targetDeadlineInfo,
+  todayStr as hubTodayStr,
+} from './lib/deadline'
+import { getCurrentPlanDeadline } from './business/planRoadmap'
 import './index.css'
 
 const pageMotion = {
-  initial: { opacity: 0, y: 14 },
+  initial: { opacity: 0, y: 10 },
   animate: { opacity: 1, y: 0 },
-  exit: { opacity: 0, y: -8 },
-  transition: { duration: 0.28, ease: [0.22, 1, 0.36, 1] as const },
+  exit: { opacity: 0, y: -6 },
+  transition: { duration: 0.32, ease: [0.22, 1, 0.36, 1] as const },
 }
 
 class ErrorBoundary extends Component<
@@ -71,6 +93,10 @@ function HomeView() {
   const spacesAll = useHub((s) => s.spaces)
   const tasks = useHub((s) => s.tasks)
   const toggleTask = useHub((s) => s.toggleTask)
+  const deleteTask = useHub((s) => s.deleteTask)
+  const body = useHub((s) => s.body)
+  const driving = useHub((s) => s.driving)
+  const setView = useHub((s) => s.setView)
 
   const spaces = useMemo(
     () => (spacesAll ?? []).filter((x) => !x.archived),
@@ -85,6 +111,80 @@ function HomeView() {
     () => (tasks ?? []).filter((t) => t.scope === 'week' && map[t.spaceId]),
     [tasks, map],
   )
+
+  const deadlineRows = useMemo(() => {
+    const today = hubTodayStr()
+    const bodySpace = spaces.find((s) => s.key === 'body' || s.kind === 'body')
+    const driveSpace = spaces.find((s) => s.key === 'driving' || s.kind === 'driving')
+    const bizSpace = spaces.find((s) => s.key === 'business' || s.kind === 'business')
+    const rows: {
+      key: string
+      spaceId: string
+      title: string
+      subtitle: string
+      color: string
+      date: string | null
+      info: ReturnType<typeof targetDeadlineInfo>
+      ratio: number
+    }[] = []
+
+    if (bizSpace) {
+      const plan = getCurrentPlanDeadline(today)
+      rows.push({
+        key: 'business-plan',
+        spaceId: bizSpace.id,
+        title: `起業 ${plan.phaseCode}`,
+        subtitle: plan.subtitle,
+        color: bizSpace.color || '#2563eb',
+        date: plan.date,
+        info: targetDeadlineInfo(plan.date, today),
+        ratio: deadlineApproachRatio(plan.start, plan.date, today),
+      })
+    }
+
+    if (bodySpace) {
+      const info = targetDeadlineInfo(body.settings.targetDate)
+      rows.push({
+        key: 'body',
+        spaceId: bodySpace.id,
+        title: '筋トレ',
+        subtitle:
+          body.settings.targetWeight != null
+            ? `目標 ${body.settings.targetWeight} kg`
+            : '目標体重の期限',
+        color: bodySpace.color || '#dc2626',
+        date: body.settings.targetDate,
+        info,
+        ratio: deadlineApproachRatio(
+          body.settings.targetStartDate,
+          body.settings.targetDate,
+        ),
+      })
+    }
+
+    if (driveSpace) {
+      const info = targetDeadlineInfo(driving.targetDate)
+      rows.push({
+        key: 'driving',
+        spaceId: driveSpace.id,
+        title: '自動車学校',
+        subtitle: '免許取得の期限',
+        color: driveSpace.color || '#84cc16',
+        date: driving.targetDate,
+        info,
+        ratio: deadlineApproachRatio(driving.startDate, driving.targetDate),
+      })
+    }
+
+    return rows
+  }, [
+    spaces,
+    body.settings.targetDate,
+    body.settings.targetStartDate,
+    body.settings.targetWeight,
+    driving.targetDate,
+    driving.startDate,
+  ])
 
   return (
     <motion.div {...pageMotion}>
@@ -111,12 +211,22 @@ function HomeView() {
                   onClick={() => toggleTask(t.id)}
                 />
                 <span className="task-title">{t.title}</span>
-                <span
-                  className="space-tag"
-                  style={{ background: map[t.spaceId]?.color }}
-                >
-                  {map[t.spaceId]?.name}
-                </span>
+                <div className="task-item-aside">
+                  <span
+                    className="space-tag"
+                    style={{ background: map[t.spaceId]?.color }}
+                  >
+                    {map[t.spaceId]?.name}
+                  </span>
+                  <button
+                    type="button"
+                    className="btn sm ghost danger"
+                    aria-label="タスクを削除"
+                    onClick={() => deleteTask(t.id)}
+                  >
+                    削除
+                  </button>
+                </div>
               </motion.div>
             ))}
           </div>
@@ -139,16 +249,68 @@ function HomeView() {
                   onClick={() => toggleTask(t.id)}
                 />
                 <span className="task-title">{t.title}</span>
-                <span
-                  className="space-tag"
-                  style={{ background: map[t.spaceId]?.color }}
-                >
-                  {map[t.spaceId]?.name}
-                </span>
+                <div className="task-item-aside">
+                  <span
+                    className="space-tag"
+                    style={{ background: map[t.spaceId]?.color }}
+                  >
+                    {map[t.spaceId]?.name}
+                  </span>
+                  <button
+                    type="button"
+                    className="btn sm ghost danger"
+                    aria-label="タスクを削除"
+                    onClick={() => deleteTask(t.id)}
+                  >
+                    削除
+                  </button>
+                </div>
               </div>
             ))}
           </div>
         )}
+      </section>
+
+      <section className="panel home-deadlines">
+        <h2>期限ゲージ</h2>
+        <div className="deadline-gauge-list">
+          {deadlineRows.map((row) => (
+            <button
+              key={row.key}
+              type="button"
+              className="deadline-gauge"
+              data-status={row.info.status}
+              style={{ ['--gauge' as string]: row.color }}
+              onClick={() => setView('space', row.spaceId)}
+            >
+              <div className="deadline-gauge-top">
+                <div className="deadline-gauge-titles">
+                  <strong>{row.title}</strong>
+                  <span className="muted small">{row.subtitle}</span>
+                </div>
+                <div className="deadline-gauge-meta">
+                  <span className="deadline-gauge-label">{row.info.label}</span>
+                  <span className="muted small">
+                    {row.date ? formatTargetDate(row.date) : '—'}
+                  </span>
+                </div>
+              </div>
+              <div
+                className="deadline-gauge-track"
+                role="progressbar"
+                aria-valuemin={0}
+                aria-valuemax={100}
+                aria-valuenow={Math.round(row.ratio * 100)}
+                aria-label={`${row.title} 期限接近度`}
+              >
+                <div
+                  className="deadline-gauge-fill"
+                  style={{ width: `${Math.round(row.ratio * 1000) / 10}%` }}
+                />
+              </div>
+            </button>
+          ))}
+        </div>
       </section>
     </motion.div>
   )
@@ -160,6 +322,7 @@ function SpaceView({ spaceId }: { spaceId: string }) {
   const metricsAll = useHub((s) => s.metrics)
   const toggleTask = useHub((s) => s.toggleTask)
   const addTask = useHub((s) => s.addTask)
+  const deleteTask = useHub((s) => s.deleteTask)
   const addMetricPoint = useHub((s) => s.addMetricPoint)
   const [title, setTitle] = useState('')
   const [scope, setScope] = useState<TaskScope>('today')
@@ -195,6 +358,12 @@ function SpaceView({ spaceId }: { spaceId: string }) {
 
   if (!space) return <div className="empty">項目が見つかりません</div>
 
+  const hideGeneric =
+    space.kind === 'body' ||
+    space.kind === 'university' ||
+    space.kind === 'driving' ||
+    space.key === 'creative'
+
   return (
     <motion.div {...pageMotion}>
       {space.temporary ? (
@@ -208,26 +377,39 @@ function SpaceView({ spaceId }: { spaceId: string }) {
 
       {space.kind === 'business' ? <BusinessPanel /> : null}
       {space.kind === 'body' ? <BodyPanel /> : null}
+      {space.kind === 'university' ? <UniversityPanel /> : null}
+      {space.kind === 'driving' ? <DrivingPanel /> : null}
 
-      {space.kind !== 'body' ? (
+      {!hideGeneric ? (
       <section className="panel">
         <h2>タスク</h2>
         <div className="task-list" style={{ marginBottom: '0.8rem' }}>
-          {tasks.map((t) => (
-            <div key={t.id} className="task-item" data-done={t.done}>
-              <button
-                type="button"
-                className="task-check"
-                data-on={t.done}
-                onClick={() => toggleTask(t.id)}
-              />
-              <span className="task-title">
-                {t.title}
-                <span className="muted small"> · {t.scope === 'today' ? '今日' : '今週'}</span>
-              </span>
-              <span />
-            </div>
-          ))}
+          {tasks.length === 0 ? (
+            <div className="empty">タスクはまだありません</div>
+          ) : (
+            tasks.map((t) => (
+              <div key={t.id} className="task-item" data-done={t.done}>
+                <button
+                  type="button"
+                  className="task-check"
+                  data-on={t.done}
+                  onClick={() => toggleTask(t.id)}
+                />
+                <span className="task-title">
+                  {t.title}
+                  <span className="muted small"> · {t.scope === 'today' ? '今日' : '今週'}</span>
+                </span>
+                <button
+                  type="button"
+                  className="btn sm ghost danger"
+                  aria-label="タスクを削除"
+                  onClick={() => deleteTask(t.id)}
+                >
+                  削除
+                </button>
+              </div>
+            ))
+          )}
         </div>
         <label className="field">
           <span>追加</span>
@@ -267,7 +449,7 @@ function SpaceView({ spaceId }: { spaceId: string }) {
       </section>
       ) : null}
 
-      {space.kind !== 'body' ? (
+      {!hideGeneric ? (
         <section className="panel">
           <h2>数値</h2>
           {metrics.map((m) => {
@@ -309,7 +491,7 @@ function SpaceView({ spaceId }: { spaceId: string }) {
         </section>
       ) : null}
 
-      {space.kind !== 'body' && chartData.length > 0 ? (
+      {!hideGeneric && chartData.length > 0 ? (
         <section className="panel">
           <h2>推移</h2>
           <p className="muted small" style={{ marginTop: '-0.35rem', marginBottom: '0.7rem' }}>
@@ -413,7 +595,7 @@ function SettingsView() {
       <section className="panel">
         <h2>項目を追加</h2>
         <p className="muted small" style={{ marginTop: '-0.35rem', marginBottom: '0.75rem' }}>
-          数ヶ月だけの一時項目も追加できます。下部ナビはドラッグで並べ替えできます。
+          数ヶ月だけの一時項目も追加できます。下部ナビはスマホなら長押し、PCならダブルクリック後にドラッグで並べ替え。中央はクリック後に横スクロールできます。
         </p>
         <label className="field">
           <span>名前</span>
@@ -560,10 +742,20 @@ function AppShell() {
       s.body ? hydrateBody(s.body) : emptyBody(),
       BAKED_BODY,
     )
+    const university = mergeUniversity(
+      s.university ? hydrateUniversity(s.university) : emptyUniversity(),
+      BAKED_UNIVERSITY,
+    )
+    const driving = mergeDriving(
+      s.driving ? hydrateDriving(s.driving) : emptyDriving(),
+      BAKED_DRIVING,
+    )
     const ensured = ensureCoreSpaces({ ...s, business, body })
     useHub.setState({
       business,
       body,
+      university,
+      driving,
       ...ensured,
       updatedAt: Date.now(),
     })
@@ -606,52 +798,16 @@ function AppShell() {
         ) : null}
       </AnimatePresence>
 
-      <nav className="bottom-nav" aria-label="メイン">
-        <button
-          type="button"
-          className={`nav-item nav-item-fixed ${activeView === 'home' ? 'active' : ''}`}
-          onClick={() => setView('home')}
-        >
-          <div className="nav-dot" style={{ background: '#0f172a' }} />
-          ホーム
-        </button>
-
-        <Reorder.Group
-          as="div"
-          axis="x"
-          values={spaceIds}
-          onReorder={reorderSpaces}
-          className="nav-reorder"
-        >
-          {spaces.map((s) => (
-            <Reorder.Item
-              as="div"
-              key={s.id}
-              value={s.id}
-              className="nav-reorder-item"
-              whileDrag={{ scale: 1.06, zIndex: 5 }}
-            >
-              <button
-                type="button"
-                className={`nav-item ${activeView === 'space' && activeSpaceId === s.id ? 'active' : ''}`}
-                onClick={() => setView('space', s.id)}
-              >
-                <div className="nav-dot" style={{ background: s.color }} />
-                {s.name}
-              </button>
-            </Reorder.Item>
-          ))}
-        </Reorder.Group>
-
-        <button
-          type="button"
-          className={`nav-item nav-item-fixed ${activeView === 'settings' ? 'active' : ''}`}
-          onClick={() => setView('settings')}
-        >
-          <div className="nav-dot" style={{ background: '#0f172a' }} />
-          設定
-        </button>
-      </nav>
+      <BottomNav
+        spaces={spaces}
+        spaceIds={spaceIds}
+        activeView={activeView}
+        activeSpaceId={activeSpaceId}
+        onHome={() => setView('home')}
+        onSettings={() => setView('settings')}
+        onSpace={(id) => setView('space', id)}
+        onReorder={reorderSpaces}
+      />
     </div>
   )
 }

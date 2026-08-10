@@ -1,4 +1,8 @@
 import type { AppData } from '../types'
+import { emptyBusiness } from '../business/helpers'
+import { emptyBody } from '../body/helpers'
+import { emptyUniversity } from '../university/helpers'
+import { emptyDriving } from '../driving/helpers'
 
 declare global {
   interface Window {
@@ -54,16 +58,7 @@ export async function pullRemote(syncId: string): Promise<AppData | null> {
   const raw = await window.puter!.kv!.get(kvKey(syncId))
   if (!raw) return null
   const text = typeof raw === 'string' ? raw : JSON.stringify(raw)
-  const parsed = JSON.parse(text) as {
-    version?: number
-    business?: AppData['business']
-    body?: AppData['body']
-    spaces?: AppData['spaces']
-    tasks?: AppData['tasks']
-    metrics?: AppData['metrics']
-    sync?: AppData['sync']
-    updatedAt?: number
-  }
+  const parsed = JSON.parse(text) as Partial<AppData>
   if (!parsed || typeof parsed !== 'object') return null
   const ver = Number(parsed.version)
   if (ver !== 1 && ver !== 2) return null
@@ -72,26 +67,10 @@ export async function pullRemote(syncId: string): Promise<AppData | null> {
     spaces: parsed.spaces ?? [],
     tasks: parsed.tasks ?? [],
     metrics: parsed.metrics ?? [],
-    business: parsed.business ?? {
-      dmDailyGoal: 10,
-      dmWeeklyGoal: 80,
-      salesLogs: [],
-      snsLogs: [],
-      clients: [],
-      igList: [],
-    },
-    body: parsed.body ?? {
-      settings: {
-        height: null,
-        startWeight: null,
-        targetWeight: null,
-        targetDate: null,
-        dailyCalGoal: 2000,
-      },
-      records: {},
-      exercises: [],
-      workouts: [],
-    },
+    business: parsed.business ?? emptyBusiness(),
+    body: parsed.body ?? emptyBody(),
+    university: parsed.university ?? emptyUniversity(),
+    driving: parsed.driving ?? emptyDriving(),
     sync: parsed.sync ?? {
       enabled: false,
       syncId: '',
