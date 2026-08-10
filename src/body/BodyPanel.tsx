@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import { format, parseISO } from 'date-fns'
 import { useHub } from '../store'
 import type { MuscleGroup, WorkoutEntry, WorkoutSet } from '../types'
 import { BODY_PHASE_LABEL } from '../types'
@@ -18,13 +19,23 @@ import {
   workoutVolume,
 } from './helpers'
 
-type Tab = 'record' | 'train' | 'goals'
+type Tab = 'record' | 'train' | 'goals' | 'graph'
+
+const WEEKDAY_JA = ['月', '火', '水', '木', '金', '土', '日']
+const RING_C = 2 * Math.PI * 52
 
 function emptyEntry(exerciseId: string, sets?: WorkoutSet[]): WorkoutEntry {
   return {
     exerciseId,
     sets: sets?.length ? sets.map((s) => ({ ...s })) : [{ weight: 0, reps: 10 }],
   }
+}
+
+function weekRangeLabel(days: string[]) {
+  if (days.length < 2) return '—'
+  const a = parseISO(days[0])
+  const b = parseISO(days[days.length - 1])
+  return `${format(a, 'M月d日')} – ${format(b, 'M月d日')}`
 }
 
 export function BodyPanel() {
@@ -39,9 +50,16 @@ export function BodyPanel() {
 
   const [tab, setTab] = useState<Tab>('record')
   const [date, setDate] = useState(todayStr())
-  const [weightDraft, setWeightDraft] = useState('')
-  const [calDraft, setCalDraft] = useState('')
+  const [weightDraft, setWeightDraft] = useState(() => {
+    const w = useHub.getState().body.records[todayStr()]?.weight
+    return w != null ? String(w) : ''
+  })
+  const [calDraft, setCalDraft] = useState(() => {
+    const c = useHub.getState().body.records[todayStr()]?.dailyCalories
+    return c != null ? String(c) : ''
+  })
   const [msg, setMsg] = useState('')
+  const [recordFocus, setRecordFocus] = useState<'weight' | 'cal' | null>(null)
 
   const [exName, setExName] = useState('')
   const [exMuscle, setExMuscle] = useState<MuscleGroup>('chest')
@@ -59,13 +77,27 @@ export function BodyPanel() {
   }))
 
   const day = body.records[date]
+  const today = todayStr()
+  const todayRec = body.records[today]
   const current = latestWeight(body)
   const progress = goalProgress(body)
   const weekDays = weekDates()
   const weekSum = weekCalSum(body)
   const weekBudget = (body.settings.dailyCalGoal || 2000) * 7
   const weekRemain = weekBudget - weekSum
+  const weekPct = weekBudget > 0 ? Math.min(100, (weekSum / weekBudget) * 100) : 0
   const deadline = targetDeadlineInfo(body.settings.targetDate)
+  const target = body.settings.targetWeight
+  const diff =
+    current != null && target != null
+      ? Math.round((current - target) * 10) / 10
+      : null
+  const ringPct = progress ?? 0
+  const ringOffset = RING_C * (1 - ringPct / 100)
+  const draftVolume = useMemo(
+    () => draftEntries.reduce((s, e) => s + setVolume(e.sets), 0),
+    [draftEntries],
+  )
 
   useEffect(() => {
     if (tab !== 'goals') return
@@ -77,7 +109,6 @@ export function BodyPanel() {
       targetDate: body.settings.targetDate ?? '',
       dailyCalGoal: String(body.settings.dailyCalGoal || 2000),
     })
-    // 目標タブを開いたタイミングで最新値を反映
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tab])
 
@@ -96,7 +127,6 @@ export function BodyPanel() {
           }))
         : [],
     )
-    // only hydrate when date changes from outside store churn
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [trainDate])
 
@@ -126,20 +156,35 @@ export function BodyPanel() {
     window.setTimeout(() => setMsg(''), 2200)
   }
 
+  const selectDate = (d: string) => {
+    setDate(d)
+    const rec = body.records[d]
+    setWeightDraft(rec?.weight != null ? String(rec.weight) : '')
+    setCalDraft(rec?.dailyCalories != null ? String(rec.dailyCalories) : '')
+  }
+
+  const heroSub =
+    target == null
+      ? '目標体重を設定してください'
+      : progress != null
+        ? `目標まで ${diff != null ? `${Math.abs(diff)} kg` : '—'}`
+        : '体重を記録すると進捗が表示されます'
+
   return (
-    <div className="biz">
-      <div className="biz-tabs">
+    <div className="body-ui">
+      <div className="body-tabs">
         {(
           [
-            ['record', '記録'],
+            ['record', 'ホーム'],
             ['train', '筋トレ'],
-            ['goals', '目標'],
+            ['graph', 'グラフ'],
+            ['goals', '設定'],
           ] as const
         ).map(([k, label]) => (
           <button
             key={k}
             type="button"
-            className={`btn sm ${tab === k ? '' : 'ghost'}`}
+            className={`body-tab${tab === k ? ' is-active' : ''}`}
             onClick={() => setTab(k)}
           >
             {label}
@@ -147,243 +192,322 @@ export function BodyPanel() {
         ))}
       </div>
 
-      {msg ? <p className="muted small" style={{ marginBottom: '0.6rem' }}>{msg}</p> : null}
+      {msg ? <p className="body-toast">{msg}</p> : null}
 
       {tab === 'record' && (
         <>
-          <section className="panel">
-            <div className="body-phase-head">
-              <h2>きょうの状況</h2>
-              <div className="body-phase" role="group" aria-label="フェーズ">
-                {BODY_PHASES.map((phase) => (
-                  <button
-                    key={phase}
-                    type="button"
-                    className="body-phase-btn"
-                    data-active={body.settings.phase === phase}
-                    onClick={() =>
-                      saveBodySettings({
-                        phase,
-                      })
-                    }
+          <div className="body-phase" role="group" aria-label="フェーズ">
+            {BODY_PHASES.map((phase) => (
+              <button
+                key={phase}
+                type="button"
+                className={`body-phase-chip${body.settings.phase === phase ? ' is-active' : ''}`}
+                onClick={() => saveBodySettings({ phase })}
+              >
+                {BODY_PHASE_LABEL[phase]}
+              </button>
+            ))}
+          </div>
+
+          <section className="body-hero">
+            <div className="body-hero-top">
+              <div>
+                <span className="body-hero-label">目標達成度</span>
+                <h2 className="body-hero-pct">
+                  {progress != null ? `${progress}%` : '—%'}
+                </h2>
+                <p className="body-hero-sub">{heroSub}</p>
+                {body.settings.targetDate && deadline.status !== 'none' ? (
+                  <p
+                    className={`body-hero-countdown${
+                      deadline.status === 'overdue'
+                        ? ' is-overdue'
+                        : deadline.daysLeft === 0
+                          ? ' is-today'
+                          : ''
+                    }`}
                   >
-                    {BODY_PHASE_LABEL[phase]}
-                  </button>
-                ))}
+                    <span className="body-hero-countdown-num">{deadline.label}</span>
+                  </p>
+                ) : null}
+              </div>
+              <div className="body-ring-wrap" aria-hidden>
+                <svg className="body-ring" viewBox="0 0 120 120">
+                  <circle className="body-ring-bg" cx="60" cy="60" r="52" />
+                  <circle
+                    className="body-ring-fg"
+                    cx="60"
+                    cy="60"
+                    r="52"
+                    strokeDasharray={RING_C}
+                    strokeDashoffset={ringOffset}
+                  />
+                </svg>
+                <div className="body-ring-center">
+                  <span>{ringPct}</span>
+                  <small>%</small>
+                </div>
               </div>
             </div>
-            <div className="kpi-grid">
-              <div className="metric-card">
-                <div className="muted small">現在体重</div>
-                <strong>{current != null ? `${current} kg` : '—'}</strong>
+            <div className="body-hero-stats">
+              <div className="body-hero-stat">
+                <span>現在</span>
+                <strong>{current != null ? `${current} kg` : '— kg'}</strong>
               </div>
-              <div className="metric-card">
-                <div className="muted small">目標進捗</div>
-                <strong>{progress != null ? `${progress}%` : '—'}</strong>
+              <div className="body-hero-stat">
+                <span>目標</span>
+                <strong>{target != null ? `${target} kg` : '— kg'}</strong>
               </div>
-              <div className="metric-card">
-                <div className="muted small">今週カロリー</div>
-                <strong>{weekSum.toLocaleString()} kcal</strong>
-              </div>
-              <div className="metric-card">
-                <div className="muted small">残予算</div>
-                <strong>{weekRemain.toLocaleString()} kcal</strong>
-              </div>
-            </div>
-            <div className="body-goal-strip">
-              <div className="body-goal-item">
-                <span className="muted small">目標体重</span>
+              <div className="body-hero-stat">
+                <span>差分</span>
                 <strong>
-                  {body.settings.targetWeight != null
-                    ? `${body.settings.targetWeight} kg`
-                    : '未設定'}
-                </strong>
-              </div>
-              <div className="body-goal-item">
-                <span className="muted small">期間</span>
-                <strong data-deadline={deadline.status}>
-                  {body.settings.targetStartDate || body.settings.targetDate
-                    ? `${formatTargetDate(body.settings.targetStartDate)} → ${formatTargetDate(body.settings.targetDate)}${
-                        body.settings.targetDate ? ` · ${deadline.label}` : ''
-                      }`
-                    : '未設定'}
+                  {diff != null ? `${diff > 0 ? '+' : ''}${diff} kg` : '— kg'}
                 </strong>
               </div>
             </div>
-            <div className="week-cal-row" style={{ marginTop: '0.85rem' }}>
-              {weekDays.map((d) => {
+          </section>
+
+          <section className="body-card">
+            <div className="body-card-head">
+              <h3>今週のカロリー収支</h3>
+              <span className="body-badge">{weekRangeLabel(weekDays)}</span>
+            </div>
+            <div className="body-cal-main">
+              <div className={`body-cal-remain${weekRemain < 0 ? ' is-over' : ''}`}>
+                <span className="body-cal-remain-label">残り摂取可能</span>
+                <strong>{weekRemain.toLocaleString()}</strong>
+                <small>kcal</small>
+              </div>
+              <div className="body-cal-bar-wrap">
+                <div className="body-cal-bar">
+                  <div
+                    className={`body-cal-bar-fill${weekRemain < 0 ? ' is-over' : ''}`}
+                    style={{ width: `${Math.min(100, weekPct)}%` }}
+                  />
+                </div>
+                <div className="body-cal-meta">
+                  <span>
+                    摂取: <b>{weekSum.toLocaleString()}</b> kcal
+                  </span>
+                  <span>
+                    予算: <b>{weekBudget.toLocaleString()}</b> kcal
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div className="body-day-row">
+              {weekDays.map((d, i) => {
                 const c = body.records[d]?.dailyCalories
-                const label = d.slice(8)
+                const isToday = d === today
+                const isSelected = d === date
                 return (
-                  <div key={d} className="week-cal-cell" data-filled={c != null}>
-                    <span className="muted small">{label}</span>
-                    <strong>{c != null ? c : '·'}</strong>
-                  </div>
+                  <button
+                    key={d}
+                    type="button"
+                    className={`body-day-cell${isToday ? ' is-today' : ''}${
+                      isSelected ? ' is-selected' : ''
+                    }`}
+                    onClick={() => {
+                      selectDate(d)
+                      setRecordFocus('cal')
+                    }}
+                  >
+                    <span className="body-day-name">{WEEKDAY_JA[i]}</span>
+                    <span className="body-day-num">{d.slice(8)}</span>
+                    <span className="body-day-cal">{c != null ? c : '·'}</span>
+                  </button>
                 )
               })}
             </div>
           </section>
 
-          <section className="panel">
-            <h2>体重・カロリー</h2>
-            <label className="field">
+          <div className="body-quick-grid">
+            <button
+              type="button"
+              className="body-quick-btn"
+              onClick={() => {
+                selectDate(today)
+                setRecordFocus('weight')
+              }}
+            >
+              <span className="body-quick-icon" aria-hidden>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M6 4h12l1 16H5L6 4z" />
+                  <path d="M12 9v5M9 9h6" />
+                </svg>
+              </span>
+              <span>体重を記録</span>
+            </button>
+            <button
+              type="button"
+              className="body-quick-btn"
+              onClick={() => {
+                selectDate(today)
+                setRecordFocus('cal')
+              }}
+            >
+              <span className="body-quick-icon" aria-hidden>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M3 11h18M12 11v9M6 11a6 6 0 0 1 12 0" />
+                </svg>
+              </span>
+              <span>カロリーを記録</span>
+            </button>
+            <button
+              type="button"
+              className="body-quick-btn"
+              onClick={() => setTab('train')}
+            >
+              <span className="body-quick-icon" aria-hidden>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M6.5 6.5l11 11M4 10l2-2 2 2M16 14l2 2 2-2M8 4l2 2M14 18l2 2" />
+                </svg>
+              </span>
+              <span>筋トレを記録</span>
+            </button>
+          </div>
+
+          <section className="body-card">
+            <div className="body-card-head">
+              <h3>今日の記録</h3>
+              <span className="body-date-text">
+                {format(parseISO(today), 'M月d日')}
+              </span>
+            </div>
+            <div className="body-today-grid">
+              <div className="body-today-item">
+                <span>体重</span>
+                <strong>
+                  {todayRec?.weight != null ? `${todayRec.weight} kg` : '未入力'}
+                </strong>
+              </div>
+              <div className="body-today-item">
+                <span>摂取カロリー</span>
+                <strong>
+                  {todayRec?.dailyCalories != null
+                    ? `${todayRec.dailyCalories.toLocaleString()} kcal`
+                    : '0 kcal'}
+                </strong>
+              </div>
+            </div>
+          </section>
+
+          <section
+            className={`body-card${recordFocus === 'weight' ? ' is-focus' : ''}`}
+            id="body-weight-form"
+          >
+            <div className="body-card-head">
+              <h3>体重</h3>
+              <span className="body-badge">{date.slice(5)}</span>
+            </div>
+            <label className="body-field">
               <span>日付</span>
               <input
-                className="input"
+                className="body-input"
                 type="date"
                 value={date}
-                onChange={(e) => {
-                  const d = e.target.value
-                  setDate(d)
-                  const rec = body.records[d]
-                  setWeightDraft(rec?.weight != null ? String(rec.weight) : '')
-                  setCalDraft(rec?.dailyCalories != null ? String(rec.dailyCalories) : '')
-                }}
+                onChange={(e) => selectDate(e.target.value)}
               />
             </label>
-            <p className="muted small" style={{ marginBottom: '0.7rem' }}>
+            <label className="body-field">
+              <span>体重 (kg)</span>
+              <input
+                className="body-input"
+                inputMode="decimal"
+                placeholder="例: 61.5"
+                value={weightDraft}
+                onChange={(e) => setWeightDraft(e.target.value)}
+              />
+            </label>
+            <button
+              type="button"
+              className="body-btn-primary"
+              onClick={() => {
+                const v = Number(weightDraft)
+                if (!Number.isFinite(v)) {
+                  flash('体重を入力してください')
+                  return
+                }
+                saveDayWeight(date, v)
+                flash('体重を保存しました')
+              }}
+            >
+              体重を保存
+            </button>
+          </section>
+
+          <section
+            className={`body-card${recordFocus === 'cal' ? ' is-focus' : ''}`}
+            id="body-cal-form"
+          >
+            <div className="body-card-head">
+              <h3>摂取カロリー</h3>
+              <span className="body-badge">{date.slice(5)}</span>
+            </div>
+            <label className="body-field">
+              <span>その日の合計摂取カロリー (kcal)</span>
+              <input
+                className="body-input"
+                inputMode="numeric"
+                placeholder="例: 1800"
+                value={calDraft}
+                onChange={(e) => setCalDraft(e.target.value)}
+              />
+            </label>
+            <p className="body-hint">
               記録済み:{' '}
               {day?.weight != null ? `${day.weight} kg` : '体重なし'}
               {' · '}
               {day?.dailyCalories != null ? `${day.dailyCalories} kcal` : 'カロリーなし'}
             </p>
-            <div className="row" style={{ marginBottom: '0.55rem' }}>
-              <label className="field" style={{ flex: 1, marginBottom: 0 }}>
-                <span>体重 (kg)</span>
-                <input
-                  className="input"
-                  inputMode="decimal"
-                  placeholder="例: 61.5"
-                  value={weightDraft}
-                  onChange={(e) => setWeightDraft(e.target.value)}
-                />
-              </label>
-              <button
-                type="button"
-                className="btn sm"
-                style={{ alignSelf: 'flex-end' }}
-                onClick={() => {
-                  const v = Number(weightDraft)
-                  if (!Number.isFinite(v)) {
-                    flash('体重を入力してください')
-                    return
-                  }
-                  saveDayWeight(date, v)
-                  flash('体重を保存しました')
-                }}
-              >
-                体重保存
-              </button>
-            </div>
-            <div className="row">
-              <label className="field" style={{ flex: 1, marginBottom: 0 }}>
-                <span>カロリー (kcal)</span>
-                <input
-                  className="input"
-                  inputMode="numeric"
-                  placeholder="例: 1800"
-                  value={calDraft}
-                  onChange={(e) => setCalDraft(e.target.value)}
-                />
-              </label>
-              <button
-                type="button"
-                className="btn sm"
-                style={{ alignSelf: 'flex-end' }}
-                onClick={() => {
-                  const v = Number(calDraft)
-                  if (!Number.isFinite(v) || v < 0) {
-                    flash('カロリーを入力してください')
-                    return
-                  }
-                  saveDayCalories(date, Math.round(v))
-                  flash('カロリーを保存しました')
-                }}
-              >
-                カロリー保存
-              </button>
-            </div>
+            <button
+              type="button"
+              className="body-btn-primary"
+              onClick={() => {
+                const v = Number(calDraft)
+                if (!Number.isFinite(v) || v < 0) {
+                  flash('カロリーを入力してください')
+                  return
+                }
+                saveDayCalories(date, Math.round(v))
+                flash('カロリーを保存しました')
+              }}
+            >
+              カロリーを保存
+            </button>
           </section>
         </>
       )}
 
       {tab === 'train' && (
         <>
-          <section className="panel">
-            <h2>種目マスタ</h2>
-            <div className="row" style={{ marginBottom: '0.55rem' }}>
-              <input
-                className="input"
-                style={{ flex: 1 }}
-                placeholder="種目名"
-                value={exName}
-                onChange={(e) => setExName(e.target.value)}
-              />
-              <select
-                className="input"
-                style={{ width: '6.5rem' }}
-                value={exMuscle}
-                onChange={(e) => setExMuscle(e.target.value as MuscleGroup)}
-              >
-                {(Object.keys(MUSCLE_LABELS) as MuscleGroup[]).map((k) => (
-                  <option key={k} value={k}>
-                    {MUSCLE_LABELS[k]}
-                  </option>
-                ))}
-              </select>
-              <button
-                type="button"
-                className="btn sm"
-                onClick={() => {
-                  if (!exName.trim()) return
-                  saveExercise({ name: exName, muscle: exMuscle })
-                  setExName('')
-                  flash('種目を追加しました')
-                }}
-              >
-                追加
-              </button>
+          <section className="body-card">
+            <div className="body-card-head">
+              <h3>トレーニング日</h3>
+              <span className="body-badge">
+                総負荷 {Math.round(draftVolume).toLocaleString()} kg
+              </span>
             </div>
-            <div className="task-list">
-              {body.exercises.map((ex) => (
-                <div key={ex.id} className="task-item">
-                  <span className="task-title">
-                    {ex.name}
-                    <span className="muted small"> · {MUSCLE_LABELS[ex.muscle]}</span>
-                  </span>
-                  <button
-                    type="button"
-                    className="btn sm ghost danger"
-                    onClick={() => {
-                      if (confirm(`「${ex.name}」を削除しますか？`)) deleteExercise(ex.id)
-                    }}
-                  >
-                    削除
-                  </button>
-                </div>
-              ))}
-            </div>
+            <input
+              className="body-input body-date-input"
+              type="date"
+              value={trainDate}
+              onChange={(e) => {
+                const d = e.target.value
+                setTrainDate(d)
+                loadTrainDraft(d)
+              }}
+            />
           </section>
 
-          <section className="panel">
-            <h2>トレーニング記録</h2>
-            <label className="field">
-              <span>日付</span>
-              <input
-                className="input"
-                type="date"
-                value={trainDate}
-                onChange={(e) => {
-                  const d = e.target.value
-                  setTrainDate(d)
-                  loadTrainDraft(d)
-                }}
-              />
-            </label>
-            <div className="row" style={{ marginBottom: '0.7rem' }}>
+          <section className="body-card">
+            <div className="body-card-head">
+              <h3>種目を追加</h3>
+            </div>
+            <label className="body-field">
+              <span>種目を選ぶ</span>
               <select
-                className="input"
-                style={{ flex: 1 }}
+                className="body-input"
                 value={pickExId}
                 onChange={(e) => setPickExId(e.target.value)}
               >
@@ -394,243 +518,318 @@ export function BodyPanel() {
                   </option>
                 ))}
               </select>
-              <button
-                type="button"
-                className="btn sm"
-                onClick={() => {
-                  if (!pickExId) return
-                  if (draftEntries.some((e) => e.exerciseId === pickExId)) {
-                    flash('すでに追加済みです')
-                    return
-                  }
-                  setDraftEntries((prev) => [
-                    ...prev,
-                    emptyEntry(pickExId, lastSetsFor(pickExId)),
-                  ])
-                }}
-              >
-                追加
-              </button>
-              <button
-                type="button"
-                className="btn sm ghost"
-                onClick={() => loadTrainDraft(trainDate)}
-              >
-                読込
-              </button>
-            </div>
-
-            {draftEntries.length === 0 ? (
-              <div className="empty">種目を追加してセットを記録</div>
-            ) : (
-              draftEntries.map((entry, ei) => {
-                const ex = body.exercises.find((x) => x.id === entry.exerciseId)
-                const vol = setVolume(entry.sets)
-                return (
-                  <div key={`${entry.exerciseId}-${ei}`} className="train-block">
-                    <div className="row" style={{ justifyContent: 'space-between' }}>
-                      <strong>
-                        {ex?.name ?? '不明'}
-                        <span className="muted small">
-                          {' '}
-                          · 負荷 {Math.round(vol)} · 推定1RM{' '}
-                          {entry.sets[0]
-                            ? est1rm(entry.sets[0].weight, entry.sets[0].reps)
-                            : '—'}
-                        </span>
-                      </strong>
-                      <button
-                        type="button"
-                        className="btn sm ghost danger"
-                        onClick={() =>
-                          setDraftEntries((prev) => prev.filter((_, i) => i !== ei))
-                        }
-                      >
-                        削除
-                      </button>
-                    </div>
-                    {entry.sets.map((set, si) => (
-                      <div key={si} className="row" style={{ marginTop: '0.35rem' }}>
-                        <input
-                          className="input"
-                          style={{ width: '5rem' }}
-                          inputMode="decimal"
-                          value={set.weight}
-                          onChange={(e) => {
-                            const v = Number(e.target.value)
-                            setDraftEntries((prev) =>
-                              prev.map((en, i) =>
-                                i !== ei
-                                  ? en
-                                  : {
-                                      ...en,
-                                      sets: en.sets.map((s, j) =>
-                                        j === si
-                                          ? {
-                                              ...s,
-                                              weight: Number.isFinite(v) ? v : 0,
-                                            }
-                                          : s,
-                                      ),
-                                    },
-                              ),
-                            )
-                          }}
-                        />
-                        <span className="muted small">kg ×</span>
-                        <input
-                          className="input"
-                          style={{ width: '4rem' }}
-                          inputMode="numeric"
-                          value={set.reps}
-                          onChange={(e) => {
-                            const v = parseInt(e.target.value, 10)
-                            setDraftEntries((prev) =>
-                              prev.map((en, i) =>
-                                i !== ei
-                                  ? en
-                                  : {
-                                      ...en,
-                                      sets: en.sets.map((s, j) =>
-                                        j === si
-                                          ? { ...s, reps: Number.isFinite(v) ? v : 0 }
-                                          : s,
-                                      ),
-                                    },
-                              ),
-                            )
-                          }}
-                        />
-                        <span className="muted small">回</span>
-                        <button
-                          type="button"
-                          className="btn sm ghost"
-                          onClick={() =>
-                            setDraftEntries((prev) =>
-                              prev.map((en, i) =>
-                                i !== ei
-                                  ? en
-                                  : { ...en, sets: en.sets.filter((_, j) => j !== si) },
-                              ),
-                            )
-                          }
-                        >
-                          −
-                        </button>
-                      </div>
-                    ))}
-                    <button
-                      type="button"
-                      className="btn sm ghost"
-                      style={{ marginTop: '0.4rem' }}
-                      onClick={() =>
-                        setDraftEntries((prev) =>
-                          prev.map((en, i) =>
-                            i !== ei
-                              ? en
-                              : {
-                                  ...en,
-                                  sets: [
-                                    ...en.sets,
-                                    {
-                                      weight: en.sets.at(-1)?.weight ?? 0,
-                                      reps: en.sets.at(-1)?.reps ?? 10,
-                                    },
-                                  ],
-                                },
-                          ),
-                        )
-                      }
-                    >
-                      セット追加
-                    </button>
-                  </div>
-                )
-              })
-            )}
-
-            <div className="row" style={{ marginTop: '0.85rem' }}>
-              <button
-                type="button"
-                className="btn"
-                onClick={() => {
-                  const cleaned = draftEntries
-                    .map((e) => ({
-                      ...e,
-                      sets: e.sets.filter((s) => s.reps > 0 && s.weight >= 0),
-                    }))
-                    .filter((e) => e.sets.length > 0)
-                  if (cleaned.length === 0) {
-                    deleteWorkout(trainDate)
-                    setDraftEntries([])
-                    flash('この日のトレを削除しました')
-                    return
-                  }
-                  saveWorkout({
-                    id: workoutForDate?.id,
-                    date: trainDate,
-                    note: workoutForDate?.note ?? '',
-                    entries: cleaned,
-                  })
-                  flash('トレーニングを保存しました')
-                }}
-              >
-                トレーニング保存
-              </button>
-            </div>
+            </label>
+            <button
+              type="button"
+              className="body-btn-primary"
+              onClick={() => {
+                if (!pickExId) return
+                if (draftEntries.some((e) => e.exerciseId === pickExId)) {
+                  flash('すでに追加済みです')
+                  return
+                }
+                setDraftEntries((prev) => [
+                  ...prev,
+                  emptyEntry(pickExId, lastSetsFor(pickExId)),
+                ])
+                setPickExId('')
+              }}
+            >
+              この種目を追加
+            </button>
           </section>
 
-          <section className="panel">
-            <h2>直近のトレ</h2>
-            {body.workouts.length === 0 ? (
-              <div className="empty">まだありません</div>
+          <section className="body-card">
+            <div className="body-card-head">
+              <h3>本日のメニュー</h3>
+            </div>
+            {draftEntries.length === 0 ? (
+              <p className="body-hint body-empty-hint">
+                上から種目を選んで追加すると、ここにセット入力が表示されます
+              </p>
             ) : (
-              body.workouts
-                .slice()
-                .sort((a, b) => b.date.localeCompare(a.date))
-                .slice(0, 6)
-                .map((w) => (
-                  <div key={w.id} className="task-item">
-                    <span className="task-title">
-                      {w.date.slice(5)}
-                      <span className="muted small">
-                        {' '}
-                        · {w.entries.length}種目 · 総負荷 {Math.round(workoutVolume(w))}
-                      </span>
-                    </span>
+              <div className="body-train-entries">
+                {draftEntries.map((entry, ei) => {
+                  const ex = body.exercises.find((x) => x.id === entry.exerciseId)
+                  const vol = setVolume(entry.sets)
+                  return (
+                    <div key={`${entry.exerciseId}-${ei}`} className="body-train-entry">
+                      <div className="body-train-entry-head">
+                        <div>
+                          <strong>{ex?.name ?? '不明'}</strong>
+                          <span className="body-hint">
+                            {ex ? MUSCLE_LABELS[ex.muscle] : ''} · 負荷{' '}
+                            {Math.round(vol)} · 推定1RM{' '}
+                            {entry.sets[0]
+                              ? est1rm(entry.sets[0].weight, entry.sets[0].reps)
+                              : '—'}
+                          </span>
+                        </div>
+                        <button
+                          type="button"
+                          className="body-btn-ghost body-btn-danger"
+                          onClick={() =>
+                            setDraftEntries((prev) => prev.filter((_, i) => i !== ei))
+                          }
+                        >
+                          削除
+                        </button>
+                      </div>
+                      {entry.sets.map((set, si) => (
+                        <div key={si} className="body-set-row">
+                          <span className="body-set-idx">{si + 1}</span>
+                          <input
+                            className="body-input"
+                            inputMode="decimal"
+                            value={set.weight}
+                            aria-label="重量"
+                            onChange={(e) => {
+                              const v = Number(e.target.value)
+                              setDraftEntries((prev) =>
+                                prev.map((en, i) =>
+                                  i !== ei
+                                    ? en
+                                    : {
+                                        ...en,
+                                        sets: en.sets.map((s, j) =>
+                                          j === si
+                                            ? {
+                                                ...s,
+                                                weight: Number.isFinite(v) ? v : 0,
+                                              }
+                                            : s,
+                                        ),
+                                      },
+                                ),
+                              )
+                            }}
+                          />
+                          <span className="body-set-x">kg ×</span>
+                          <input
+                            className="body-input"
+                            inputMode="numeric"
+                            value={set.reps}
+                            aria-label="回数"
+                            onChange={(e) => {
+                              const v = parseInt(e.target.value, 10)
+                              setDraftEntries((prev) =>
+                                prev.map((en, i) =>
+                                  i !== ei
+                                    ? en
+                                    : {
+                                        ...en,
+                                        sets: en.sets.map((s, j) =>
+                                          j === si
+                                            ? {
+                                                ...s,
+                                                reps: Number.isFinite(v) ? v : 0,
+                                              }
+                                            : s,
+                                        ),
+                                      },
+                                ),
+                              )
+                            }}
+                          />
+                          <span className="body-set-x">回</span>
+                          <button
+                            type="button"
+                            className="body-btn-ghost body-set-remove"
+                            onClick={() =>
+                              setDraftEntries((prev) =>
+                                prev.map((en, i) =>
+                                  i !== ei
+                                    ? en
+                                    : {
+                                        ...en,
+                                        sets: en.sets.filter((_, j) => j !== si),
+                                      },
+                                ),
+                              )
+                            }
+                          >
+                            −
+                          </button>
+                        </div>
+                      ))}
+                      <button
+                        type="button"
+                        className="body-btn-secondary body-set-add"
+                        onClick={() =>
+                          setDraftEntries((prev) =>
+                            prev.map((en, i) =>
+                              i !== ei
+                                ? en
+                                : {
+                                    ...en,
+                                    sets: [
+                                      ...en.sets,
+                                      {
+                                        weight: en.sets.at(-1)?.weight ?? 0,
+                                        reps: en.sets.at(-1)?.reps ?? 10,
+                                      },
+                                    ],
+                                  },
+                            ),
+                          )
+                        }
+                      >
+                        セット追加
+                      </button>
+                    </div>
+                  )
+                })}
+              </div>
+            )}
+            <button
+              type="button"
+              className="body-btn-primary"
+              onClick={() => {
+                const cleaned = draftEntries
+                  .map((e) => ({
+                    ...e,
+                    sets: e.sets.filter((s) => s.reps > 0 && s.weight >= 0),
+                  }))
+                  .filter((e) => e.sets.length > 0)
+                if (cleaned.length === 0) {
+                  deleteWorkout(trainDate)
+                  setDraftEntries([])
+                  flash('この日のトレを削除しました')
+                  return
+                }
+                saveWorkout({
+                  id: workoutForDate?.id,
+                  date: trainDate,
+                  note: workoutForDate?.note ?? '',
+                  entries: cleaned,
+                })
+                flash('トレーニングを保存しました')
+              }}
+            >
+              トレーニングを保存
+            </button>
+          </section>
+
+          <section className="body-card">
+            <div className="body-card-head">
+              <h3>直近のトレ</h3>
+            </div>
+            {body.workouts.length === 0 ? (
+              <p className="body-hint">まだありません</p>
+            ) : (
+              <div className="body-recent-list">
+                {body.workouts
+                  .slice()
+                  .sort((a, b) => b.date.localeCompare(a.date))
+                  .slice(0, 6)
+                  .map((w) => (
                     <button
+                      key={w.id}
                       type="button"
-                      className="btn sm ghost"
+                      className="body-recent-item"
                       onClick={() => {
                         setTrainDate(w.date)
                         loadTrainDraft(w.date)
                       }}
                     >
-                      開く
+                      <span>
+                        <strong>{w.date.slice(5)}</strong>
+                        <span className="body-hint">
+                          {w.entries.length}種目 · 総負荷{' '}
+                          {Math.round(workoutVolume(w)).toLocaleString()}
+                        </span>
+                      </span>
+                      <span className="body-recent-open">開く</span>
                     </button>
-                  </div>
-                ))
+                  ))}
+              </div>
             )}
+          </section>
+
+          <section className="body-card">
+            <div className="body-card-head">
+              <h3>種目マスタ</h3>
+            </div>
+            <div className="body-ex-form">
+              <label className="body-field">
+                <span>種目名</span>
+                <input
+                  className="body-input"
+                  placeholder="例: ベンチプレス"
+                  value={exName}
+                  onChange={(e) => setExName(e.target.value)}
+                />
+              </label>
+              <label className="body-field">
+                <span>部位</span>
+                <select
+                  className="body-input"
+                  value={exMuscle}
+                  onChange={(e) => setExMuscle(e.target.value as MuscleGroup)}
+                >
+                  {(Object.keys(MUSCLE_LABELS) as MuscleGroup[]).map((k) => (
+                    <option key={k} value={k}>
+                      {MUSCLE_LABELS[k]}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            </div>
+            <button
+              type="button"
+              className="body-btn-secondary"
+              onClick={() => {
+                if (!exName.trim()) return
+                saveExercise({ name: exName, muscle: exMuscle })
+                setExName('')
+                flash('種目を追加しました')
+              }}
+            >
+              種目を登録
+            </button>
+            <div className="body-ex-list">
+              {body.exercises.map((ex) => (
+                <div key={ex.id} className="body-ex-item">
+                  <span>
+                    <strong>{ex.name}</strong>
+                    <span className="body-hint">{MUSCLE_LABELS[ex.muscle]}</span>
+                  </span>
+                  <button
+                    type="button"
+                    className="body-btn-ghost body-btn-danger"
+                    onClick={() => {
+                      if (confirm(`「${ex.name}」を削除しますか？`)) deleteExercise(ex.id)
+                    }}
+                  >
+                    削除
+                  </button>
+                </div>
+              ))}
+            </div>
           </section>
         </>
       )}
 
+      {tab === 'graph' && <BodyCharts />}
+
       {tab === 'goals' && (
-        <section className="panel">
-          <h2>目標設定</h2>
-          <label className="field">
+        <section className="body-card">
+          <div className="body-card-head">
+            <h3>身体情報・目標</h3>
+          </div>
+          <label className="body-field">
             <span>身長 (cm)</span>
             <input
-              className="input"
+              className="body-input"
               inputMode="decimal"
               value={settingsForm.height}
               onChange={(e) => setSettingsForm((f) => ({ ...f, height: e.target.value }))}
             />
           </label>
-          <label className="field">
+          <label className="body-field">
             <span>開始体重 (kg)</span>
             <input
-              className="input"
+              className="body-input"
               inputMode="decimal"
               value={settingsForm.startWeight}
               onChange={(e) =>
@@ -638,62 +837,57 @@ export function BodyPanel() {
               }
             />
           </label>
-
-          <div className="body-goal-fields">
-            <div className="body-goal-fields-label">目標体重と期間</div>
-            <label className="field">
-              <span>目標体重 (kg)</span>
+          <label className="body-field">
+            <span>目標体重 (kg)</span>
+            <input
+              className="body-input"
+              inputMode="decimal"
+              placeholder="例: 60.0"
+              value={settingsForm.targetWeight}
+              onChange={(e) =>
+                setSettingsForm((f) => ({ ...f, targetWeight: e.target.value }))
+              }
+            />
+          </label>
+          <div className="body-goal-dates">
+            <label className="body-field">
+              <span>開始日</span>
               <input
-                className="input"
-                inputMode="decimal"
-                placeholder="例: 60.0"
-                value={settingsForm.targetWeight}
+                className="body-input"
+                type="date"
+                value={settingsForm.targetStartDate}
                 onChange={(e) =>
-                  setSettingsForm((f) => ({ ...f, targetWeight: e.target.value }))
+                  setSettingsForm((f) => ({ ...f, targetStartDate: e.target.value }))
                 }
               />
             </label>
-            <div className="row" style={{ marginBottom: 0 }}>
-              <label className="field" style={{ flex: 1, marginBottom: 0 }}>
-                <span>開始日</span>
-                <input
-                  className="input"
-                  type="date"
-                  value={settingsForm.targetStartDate}
-                  onChange={(e) =>
-                    setSettingsForm((f) => ({ ...f, targetStartDate: e.target.value }))
-                  }
-                />
-              </label>
-              <label className="field" style={{ flex: 1, marginBottom: 0 }}>
-                <span>達成期限</span>
-                <input
-                  className="input"
-                  type="date"
-                  value={settingsForm.targetDate}
-                  onChange={(e) =>
-                    setSettingsForm((f) => ({ ...f, targetDate: e.target.value }))
-                  }
-                />
-              </label>
-            </div>
-            <p className="muted small" style={{ margin: '0.55rem 0 0' }}>
-              {settingsForm.targetWeight.trim()
-                ? settingsForm.targetDate
-                  ? `目標 ${settingsForm.targetWeight} kg を ${
-                      settingsForm.targetStartDate
-                        ? `${formatTargetDate(settingsForm.targetStartDate)} から `
-                        : ''
-                    }${formatTargetDate(settingsForm.targetDate)} までに達成`
-                  : '開始日と達成期限を設定すると、ホームのゲージに反映されます'
-                : '目標体重に合わせて開始日・達成期限を設定できます'}
-            </p>
+            <label className="body-field">
+              <span>達成期限</span>
+              <input
+                className="body-input"
+                type="date"
+                value={settingsForm.targetDate}
+                onChange={(e) =>
+                  setSettingsForm((f) => ({ ...f, targetDate: e.target.value }))
+                }
+              />
+            </label>
           </div>
-
-          <label className="field" style={{ marginTop: '0.9rem' }}>
+          <p className="body-hint">
+            {settingsForm.targetWeight.trim()
+              ? settingsForm.targetDate
+                ? `目標 ${settingsForm.targetWeight} kg を ${
+                    settingsForm.targetStartDate
+                      ? `${formatTargetDate(settingsForm.targetStartDate)} から `
+                      : ''
+                  }${formatTargetDate(settingsForm.targetDate)} までに達成`
+                : '開始日と達成期限を設定すると、ホームのゲージに反映されます'
+              : '目標体重に合わせて開始日・達成期限を設定できます'}
+          </p>
+          <label className="body-field" style={{ marginTop: '0.75rem' }}>
             <span>1日カロリー目標 (kcal)</span>
             <input
-              className="input"
+              className="body-input"
               inputMode="numeric"
               value={settingsForm.dailyCalGoal}
               onChange={(e) =>
@@ -703,7 +897,7 @@ export function BodyPanel() {
           </label>
           <button
             type="button"
-            className="btn"
+            className="body-btn-primary"
             onClick={() => {
               const num = (v: string) => {
                 const n = Number(v)
@@ -720,12 +914,10 @@ export function BodyPanel() {
               flash('目標を保存しました')
             }}
           >
-            保存
+            設定を保存
           </button>
         </section>
       )}
-
-      <BodyCharts />
     </div>
   )
 }
