@@ -359,6 +359,7 @@ function SpaceView({ spaceId }: { spaceId: string }) {
   if (!space) return <div className="empty">項目が見つかりません</div>
 
   const hideMetrics =
+    space.kind === 'business' ||
     space.kind === 'body' ||
     space.kind === 'university' ||
     space.kind === 'driving' ||
