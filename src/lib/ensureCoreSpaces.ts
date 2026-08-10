@@ -121,16 +121,7 @@ export function ensureCoreSpaces(
 
   const business = byKey().get('business')
   const body = byKey().get('body')
-  const hideTaskKeys = new Set(['driving', 'creative'])
   const hideMetricKeys = new Set(['body', 'university', 'driving', 'creative'])
-  const hideTaskSpaceIds = new Set(
-    spaces
-      .filter((s) => {
-        const k = spaceKey(s)
-        return (k && hideTaskKeys.has(k)) || hideTaskKeys.has(s.kind)
-      })
-      .map((s) => s.id),
-  )
   const hideMetricSpaceIds = new Set(
     spaces
       .filter((s) => {
@@ -139,7 +130,6 @@ export function ensureCoreSpaces(
       })
       .map((s) => s.id),
   )
-  tasks = tasks.filter((t) => !hideTaskSpaceIds.has(t.spaceId))
   metrics = metrics.filter((m) => !hideMetricSpaceIds.has(m.spaceId))
 
   if (business) metrics = syncDmMetricPoints(data.business, metrics, business.id)

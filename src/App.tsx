@@ -358,13 +358,11 @@ function SpaceView({ spaceId }: { spaceId: string }) {
 
   if (!space) return <div className="empty">項目が見つかりません</div>
 
-  const hideTasks =
+  const hideMetrics =
+    space.kind === 'body' ||
+    space.kind === 'university' ||
     space.kind === 'driving' ||
     space.key === 'creative'
-  const hideMetrics =
-    hideTasks ||
-    space.kind === 'body' ||
-    space.kind === 'university'
 
   return (
     <motion.div {...pageMotion}>
@@ -382,7 +380,6 @@ function SpaceView({ spaceId }: { spaceId: string }) {
       {space.kind === 'university' ? <UniversityPanel /> : null}
       {space.kind === 'driving' ? <DrivingPanel /> : null}
 
-      {!hideTasks ? (
       <section className="panel">
         <h2>タスク</h2>
         <div className="task-list" style={{ marginBottom: '0.8rem' }}>
@@ -449,7 +446,6 @@ function SpaceView({ spaceId }: { spaceId: string }) {
           </button>
         </div>
       </section>
-      ) : null}
 
       {!hideMetrics ? (
         <section className="panel">
