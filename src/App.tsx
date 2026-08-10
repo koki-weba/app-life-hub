@@ -447,7 +447,7 @@ function SpaceView({ spaceId }: { spaceId: string }) {
         </div>
       </section>
 
-      {!hideMetrics ? (
+      {!hideMetrics && space.kind !== 'business' ? (
         <section className="panel">
           <h2>数値</h2>
           {metrics.map((m) => {
