@@ -21,7 +21,15 @@ import type {
   UniversityTermId,
   Workout,
 } from './types'
-import { pullRemote, pushRemote, ensureSyncId, signInPuter, signOutPuter, getPuterUsername } from './sync/puterSync'
+import {
+  pullRemote,
+  pushRemote,
+  ensureSyncId,
+  issueNewSyncId,
+  signInPuter,
+  signOutPuter,
+  getPuterUsername,
+} from './sync/puterSync'
 import {
   emptyBusiness,
   mergeBusiness,
@@ -106,6 +114,10 @@ type HubState = AppData & {
 function stamp() {
   return { updatedAt: Date.now() }
 }
+
+/** 同時実行を1本にまとめる（自動同期の連打対策） */
+let syncInFlight: Promise<void> | null = null
+
 
 function businessSpaceId(spaces: Space[]) {
   return spaces.find((s) => s.kind === 'business' && !s.archived)?.id
@@ -573,98 +585,122 @@ export const useHub = create<HubState>()(
             },
           })),
 
-        setSyncEnabled: (enabled) =>
+        setSyncEnabled: (enabled) => {
           set((s) => ({
-            ...stamp(),
             sync: {
               ...s.sync,
               enabled,
               syncId: enabled ? ensureSyncId(s.sync.syncId) : s.sync.syncId,
               status: enabled ? 'idle' : 'offline',
-              message: enabled ? '同期ON' : '端末のみ',
+              message: enabled ? '同期ON（自動で送受信します）' : '端末のみ',
             },
-          })),
+          }))
+          if (enabled) {
+            void get().syncNow()
+          }
+        },
 
         rotateSyncId: () =>
           set((s) => ({
-            ...stamp(),
             sync: {
               ...s.sync,
-              syncId: ensureSyncId(''),
+              syncId: issueNewSyncId(),
               message: '新しい同期IDを発行しました',
             },
           })),
 
-        setSyncId: (id) =>
+        setSyncId: (id) => {
+          const next = id.trim()
+          const syncId = next ? ensureSyncId(next) : ''
           set((s) => ({
-            ...stamp(),
-            sync: { ...s.sync, syncId: id.trim(), message: '同期IDを更新' },
-          })),
+            sync: { ...s.sync, syncId, message: '同期IDを更新' },
+          }))
+          if (next && get().sync.enabled) {
+            void get().syncNow()
+          }
+        },
 
         syncNow: async () => {
-          const s = get()
-          if (!s.sync.enabled) {
-            set({ sync: { ...s.sync, status: 'offline', message: '同期がOFFです' } })
-            return
-          }
-          const syncId = ensureSyncId(s.sync.syncId)
-          set({
-            sync: { ...s.sync, syncId, status: 'syncing', message: '同期中…' },
-          })
-          try {
-            const remote = await pullRemote(syncId)
-            const local: AppData = {
-              version: 2,
-              spaces: get().spaces,
-              tasks: get().tasks,
-              metrics: get().metrics,
-              business: get().business,
-              body: get().body,
-              university: get().university,
-              driving: get().driving,
-              sync: get().sync,
-              updatedAt: get().updatedAt,
+          if (syncInFlight) return syncInFlight
+          syncInFlight = (async () => {
+            const s = get()
+            if (!s.sync.enabled) {
+              set({ sync: { ...s.sync, status: 'offline', message: '同期がOFFです' } })
+              return
             }
-            if (remote && remote.updatedAt > local.updatedAt) {
-              set({
-                ...remote,
+            const syncId = ensureSyncId(s.sync.syncId)
+            set({
+              sync: { ...s.sync, syncId, status: 'syncing', message: '同期中…' },
+            })
+            try {
+              const remote = await pullRemote(syncId)
+              const local: AppData = {
                 version: 2,
-                business: remote.business ?? emptyBusiness(),
-                body: remote.body ? hydrateBody(remote.body) : emptyBody(),
-                university: remote.university
-                  ? hydrateUniversity(remote.university)
-                  : emptyUniversity(),
-                driving: remote.driving
-                  ? hydrateDriving(remote.driving)
-                  : emptyDriving(),
-                sync: {
-                  ...get().sync,
-                  syncId,
-                  enabled: true,
-                  status: 'idle',
-                  lastPulledAt: Date.now(),
-                  message: 'クラウドから取り込みました',
-                },
-                activeView: get().activeView,
-                activeSpaceId: get().activeSpaceId,
-              })
-            } else {
-              await pushRemote(syncId, { ...local, sync: { ...local.sync, syncId } })
+                spaces: get().spaces,
+                tasks: get().tasks,
+                metrics: get().metrics,
+                business: get().business,
+                body: get().body,
+                university: get().university,
+                driving: get().driving,
+                sync: get().sync,
+                updatedAt: get().updatedAt,
+              }
+              if (remote && remote.updatedAt > local.updatedAt) {
+                set({
+                  ...remote,
+                  version: 2,
+                  business: remote.business ?? emptyBusiness(),
+                  body: remote.body ? hydrateBody(remote.body) : emptyBody(),
+                  university: remote.university
+                    ? hydrateUniversity(remote.university)
+                    : emptyUniversity(),
+                  driving: remote.driving
+                    ? hydrateDriving(remote.driving)
+                    : emptyDriving(),
+                  sync: {
+                    ...get().sync,
+                    syncId,
+                    enabled: true,
+                    status: 'idle',
+                    lastPulledAt: Date.now(),
+                    message: 'クラウドから取り込みました',
+                  },
+                  activeView: get().activeView,
+                  activeSpaceId: get().activeSpaceId,
+                })
+              } else if (!remote || local.updatedAt > remote.updatedAt) {
+                await pushRemote(syncId, { ...local, sync: { ...local.sync, syncId } })
+                set((cur) => ({
+                  sync: {
+                    ...cur.sync,
+                    syncId,
+                    status: 'idle',
+                    lastPushedAt: Date.now(),
+                    message: 'クラウドへ保存しました',
+                  },
+                }))
+              } else {
+                set((cur) => ({
+                  sync: {
+                    ...cur.sync,
+                    syncId,
+                    status: 'idle',
+                    message: '最新です',
+                  },
+                }))
+              }
+            } catch (e) {
+              const msg = e instanceof Error ? e.message : '同期に失敗'
               set((cur) => ({
-                sync: {
-                  ...cur.sync,
-                  syncId,
-                  status: 'idle',
-                  lastPushedAt: Date.now(),
-                  message: 'クラウドへ保存しました',
-                },
+                sync: { ...cur.sync, status: 'error', message: msg },
               }))
             }
-          } catch (e) {
-            const msg = e instanceof Error ? e.message : '同期に失敗'
-            set((cur) => ({
-              sync: { ...cur.sync, status: 'error', message: msg },
-            }))
+          })()
+          try {
+            await syncInFlight
+          } finally {
+            syncInFlight = null
           }
         },
 
@@ -682,6 +718,9 @@ export const useHub = create<HubState>()(
                 message: name ? `Puter ログイン済み（${name}）` : 'Puter ログイン済み',
               },
             }))
+            if (get().sync.enabled) {
+              await get().syncNow()
+            }
           } catch (e) {
             const msg = e instanceof Error ? e.message : 'ログインに失敗'
             set((s) => ({
@@ -737,7 +776,7 @@ export const useHub = create<HubState>()(
                 enabled: true,
                 status: 'idle',
                 lastPushedAt: now,
-                message: 'この端末のデータをクラウドに上書きしました（他端末で「クラウドから取り込み」）',
+                message: 'この端末のデータをクラウドに上書きしました',
               },
             })
           } catch (e) {
@@ -766,7 +805,8 @@ export const useHub = create<HubState>()(
                   ...get().sync,
                   syncId,
                   status: 'error',
-                  message: 'クラウドにデータがありません。先にスマホで「この端末をクラウドへ上書き」してください',
+                  message:
+                    'クラウドにデータがありません。先に片方の端末で「この端末をクラウドへ上書き」してください',
                 },
               })
               return
@@ -926,7 +966,7 @@ export const useHub = create<HubState>()(
         state.spaces = ensured.spaces
         state.tasks = ensured.tasks
         state.metrics = ensured.metrics
-        state.updatedAt = Date.now()
+        // updatedAt は触らない（起動のたびに「ローカルが最新」扱いになり同期が壊れるため）
       },
     },
   ),

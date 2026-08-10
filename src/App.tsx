@@ -9,7 +9,7 @@ import {
   XAxis,
   YAxis,
 } from 'recharts'
-import { Component, useEffect, useMemo, useState, type ErrorInfo, type ReactNode } from 'react'
+import { Component, useEffect, useMemo, useRef, useState, type ErrorInfo, type ReactNode } from 'react'
 import { BusinessPanel } from './business/BusinessPanel'
 import { BodyPanel } from './body/BodyPanel'
 import { UniversityPanel } from './university/UniversityPanel'
@@ -526,6 +526,46 @@ function SpaceView({ spaceId }: { spaceId: string }) {
   )
 }
 
+function AutoSync() {
+  const enabled = useHub((s) => s.sync.enabled)
+  const updatedAt = useHub((s) => s.updatedAt)
+  const syncNow = useHub((s) => s.syncNow)
+  const bootstrapped = useRef(false)
+
+  useEffect(() => {
+    if (!enabled) return
+    void syncNow()
+    const onVis = () => {
+      if (document.visibilityState === 'visible') void syncNow()
+    }
+    const onFocus = () => void syncNow()
+    const onOnline = () => void syncNow()
+    document.addEventListener('visibilitychange', onVis)
+    window.addEventListener('focus', onFocus)
+    window.addEventListener('online', onOnline)
+    const timer = window.setInterval(() => void syncNow(), 45_000)
+    return () => {
+      document.removeEventListener('visibilitychange', onVis)
+      window.removeEventListener('focus', onFocus)
+      window.removeEventListener('online', onOnline)
+      window.clearInterval(timer)
+    }
+  }, [enabled, syncNow])
+
+  useEffect(() => {
+    if (!enabled) return
+    // 初回マウントは上の effect で同期済み。データ変更後だけデバウンス送信
+    if (!bootstrapped.current) {
+      bootstrapped.current = true
+      return
+    }
+    const t = window.setTimeout(() => void syncNow(), 1200)
+    return () => window.clearTimeout(t)
+  }, [updatedAt, enabled, syncNow])
+
+  return null
+}
+
 function SettingsView() {
   const sync = useHub((s) => s.sync)
   const setSyncEnabled = useHub((s) => s.setSyncEnabled)
@@ -539,21 +579,24 @@ function SettingsView() {
   const exportJson = useHub((s) => s.exportJson)
   const [syncIdDraft, setSyncIdDraft] = useState(sync.syncId)
 
+  useEffect(() => {
+    setSyncIdDraft(sync.syncId)
+  }, [sync.syncId])
+
   return (
     <motion.div {...pageMotion}>
       <section className="panel">
         <h2>スマホ ↔ PC 同期</h2>
         <p className="muted small" style={{ marginTop: '-0.35rem', marginBottom: '0.75rem' }}>
-          Puter アカウントと同じ同期IDでデータを共有します。ログインは下のボタンから（ポップアップが開きます）。
+          Puter アカウントと同じ同期IDで自動共有します。変更後は数秒でクラウドへ送られ、アプリを開いたとき／画面に戻ったときに取り込みます。
         </p>
         <p className="muted small" style={{ marginTop: '-0.35rem', marginBottom: '0.85rem' }}>
           下部ナビの並べ替え: スマホは長押し、PCはダブルクリック後にドラッグ。中央はクリック後に横スクロール。
         </p>
         <ol className="muted small" style={{ margin: '0 0 0.85rem', paddingLeft: '1.2rem', lineHeight: 1.55 }}>
           <li>両方で「Puterにログイン」→「同期ON」</li>
-          <li>同期IDを同じにする（スマホのIDをPCに貼る）</li>
-          <li>スマホで「この端末をクラウドへ上書き」</li>
-          <li>PCで「クラウドからこの端末へ取り込み」</li>
+          <li>同期IDを同じにする（片方のIDをもう片方に貼る）</li>
+          <li>あとは自動同期（必要なら「今すぐ同期」）</li>
         </ol>
         <div className="row" style={{ marginBottom: '0.75rem' }}>
           <button type="button" className="btn sm" onClick={() => puterSignIn()}>
@@ -682,7 +725,6 @@ function AppShell() {
       university,
       driving,
       ...ensured,
-      updatedAt: Date.now(),
     })
   }, [])
 
@@ -709,6 +751,7 @@ function AppShell() {
       data-theme={isHub ? 'hub' : 'space'}
       style={{ ['--brand' as string]: themeBrand }}
     >
+      <AutoSync />
       <header className="topbar">
         <h1>{title}</h1>
       </header>

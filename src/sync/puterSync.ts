@@ -40,6 +40,13 @@ export function ensureSyncId(current: string) {
   return id
 }
 
+/** 必ず新しい同期IDを発行する（既存IDの再利用はしない） */
+export function issueNewSyncId() {
+  const id = generateSyncId()
+  localStorage.setItem(SYNC_ID_KEY, id)
+  return id
+}
+
 function kvKey(syncId: string) {
   return `lifehub_cloud_v1_${syncId}`
 }
