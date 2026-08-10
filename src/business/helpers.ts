@@ -171,20 +171,17 @@ export function syncDmMetricPoints(
     .slice(-30)
     .map((l) => ({ date: l.date, value: l.count }))
 
+  // 起業スペースは DM 系列のみ。旧データ等の「商談」など他系列は落とす
+  const others = metrics.filter((m) => m.spaceId !== businessSpaceId)
   const existing = metrics.find((m) => m.spaceId === businessSpaceId && m.key === 'dm')
-  if (existing) {
-    return metrics.map((m) => (m.id === existing.id ? { ...m, points } : m))
+  const dm = {
+    id: existing?.id || uid(),
+    spaceId: businessSpaceId,
+    key: 'dm',
+    label: 'DM送信',
+    points,
   }
-  return [
-    ...metrics,
-    {
-      id: uid(),
-      spaceId: businessSpaceId,
-      key: 'dm',
-      label: 'DM送信',
-      points,
-    },
-  ]
+  return [...others, dm]
 }
 
 export type { SnsWeekLog, IgEntry, Client, DmLog }

@@ -336,10 +336,12 @@ function SpaceView({ spaceId }: { spaceId: string }) {
     () => (tasksAll ?? []).filter((t) => t.spaceId === spaceId),
     [tasksAll, spaceId],
   )
-  const metrics = useMemo(
-    () => (metricsAll ?? []).filter((m) => m.spaceId === spaceId),
-    [metricsAll, spaceId],
-  )
+  const metrics = useMemo(() => {
+    const list = (metricsAll ?? []).filter((m) => m.spaceId === spaceId)
+    const sp = (spaces ?? []).find((x) => x.id === spaceId)
+    if (sp?.kind === 'business') return list.filter((m) => m.key === 'dm')
+    return list
+  }, [metricsAll, spaceId, spaces])
 
   const chartData = useMemo(() => {
     if (metrics.length === 0) return []
