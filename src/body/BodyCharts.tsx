@@ -1,7 +1,6 @@
 import { useMemo, useState } from 'react'
 import {
   CartesianGrid,
-  Legend,
   Line,
   LineChart,
   ResponsiveContainer,
@@ -13,18 +12,22 @@ import { addDays, format, parseISO, subDays } from 'date-fns'
 import { useHub } from '../store'
 import { todayStr } from './helpers'
 
-type RangeKey = '7d' | '30d' | '365d' | 'all'
+type RangeKey = '7d' | '30d' | '90d' | '365d' | 'all'
 
 const RANGE_OPTIONS: { key: RangeKey; label: string }[] = [
   { key: '7d', label: '1週間' },
   { key: '30d', label: '1ヶ月' },
+  { key: '90d', label: '90日' },
   { key: '365d', label: '1年' },
   { key: 'all', label: '全期間' },
 ]
 
+const DAILY_ORANGE = '#f97316'
+
 function rangeStart(range: RangeKey, today: string, earliest: string | null) {
   if (range === 'all') return earliest
-  const days = range === '7d' ? 6 : range === '30d' ? 29 : 364
+  const days =
+    range === '7d' ? 6 : range === '30d' ? 29 : range === '90d' ? 89 : 364
   return format(subDays(parseISO(today), days), 'yyyy-MM-dd')
 }
 
@@ -79,7 +82,7 @@ function buildSeries(
     const daily = byDate.has(date) ? byDate.get(date)! : null
     const avg = rolling7(byDate, date)
     const label =
-      range === '7d' || range === '30d'
+      range === '7d' || range === '30d' || range === '90d'
         ? date.slice(5)
         : date.slice(2) // YY-MM-DD compact
     return {
@@ -114,9 +117,6 @@ function ChartBlock({
   return (
     <section className="panel">
       <h2>{title}</h2>
-      <p className="muted small" style={{ marginTop: '-0.35rem', marginBottom: '0.7rem' }}>
-        日次と直近7日平均（{unit}）
-      </p>
       <div className="chart-wrap">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={data}>
@@ -130,17 +130,12 @@ function ChartBlock({
                 return [`${Number.isFinite(n) ? n : '—'} ${unit}`, label]
               }}
             />
-            <Legend
-              formatter={(value) => (value === 'daily' ? '日次' : '7日平均')}
-            />
             <Line
               type="linear"
               dataKey="daily"
               name="daily"
-              stroke={color}
+              stroke={DAILY_ORANGE}
               strokeWidth={2}
-              strokeOpacity={0.45}
-              strokeDasharray="5 4"
               dot={false}
               connectNulls={false}
               animationDuration={500}
