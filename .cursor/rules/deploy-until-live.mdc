@@ -1,0 +1,35 @@
+---
+description: Life Hub の変更は GitHub Pages 反映成功まで完了扱い
+alwaysApply: true
+---
+
+# Deploy until live (Life Hub)
+
+このリポジトリでは、ユーザー向けのアプリ変更を「コードを書いた」だけでは完了にしない。
+
+## 必須フロー（ユーザー向け変更のたび）
+
+1. 変更を実装する
+2. 可能なら `npm run build` で本番ビルドが通ることを確認する（失敗なら push しない）
+3. **依頼を待たず** 変更をコミットする（このプロジェクトでは反映までが作業範囲）
+4. `main` に `git push` する（GitHub Pages がデプロイされる）
+5. Actions の Deploy workflow が **success** になるまで確認する  
+   - API例: `https://api.github.com/repos/koki-weba/app-life-hub/actions/runs?per_page=1`  
+   - 失敗したらログを見て直し、再コミット＆再 push する
+6. ユーザーに「デプロイ成功」と、スマホでの開き直し手順を短く伝える
+
+## 完了の定義
+
+- ローカル変更のみ → **未完了**
+- push したが Actions が failure → **未完了**（修正して再デプロイ）
+- Actions success → **完了**
+
+## 例外
+
+- ユーザーが明示的に「コミットしない」「push しない」「ローカルだけ」と言った場合のみデプロイしない
+- ドキュメントやエージェント用ルールのみの変更でアプリに影響しない場合はデプロイ不要
+
+## 注意
+
+- Chrome 更新や端末再起動では公開版は変わらない。必ず Pages デプロイを通す
+- PWA はキャッシュで遅れることがある。デプロイ成功後は「アプリを完全終了→再起動」を案内する
