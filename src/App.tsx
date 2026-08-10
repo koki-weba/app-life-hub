@@ -358,11 +358,13 @@ function SpaceView({ spaceId }: { spaceId: string }) {
 
   if (!space) return <div className="empty">項目が見つかりません</div>
 
-  const hideGeneric =
-    space.kind === 'body' ||
-    space.kind === 'university' ||
+  const hideTasks =
     space.kind === 'driving' ||
     space.key === 'creative'
+  const hideMetrics =
+    hideTasks ||
+    space.kind === 'body' ||
+    space.kind === 'university'
 
   return (
     <motion.div {...pageMotion}>
@@ -380,7 +382,7 @@ function SpaceView({ spaceId }: { spaceId: string }) {
       {space.kind === 'university' ? <UniversityPanel /> : null}
       {space.kind === 'driving' ? <DrivingPanel /> : null}
 
-      {!hideGeneric ? (
+      {!hideTasks ? (
       <section className="panel">
         <h2>タスク</h2>
         <div className="task-list" style={{ marginBottom: '0.8rem' }}>
@@ -449,7 +451,7 @@ function SpaceView({ spaceId }: { spaceId: string }) {
       </section>
       ) : null}
 
-      {!hideGeneric ? (
+      {!hideMetrics ? (
         <section className="panel">
           <h2>数値</h2>
           {metrics.map((m) => {
@@ -491,7 +493,7 @@ function SpaceView({ spaceId }: { spaceId: string }) {
         </section>
       ) : null}
 
-      {!hideGeneric && chartData.length > 0 ? (
+      {!hideMetrics && chartData.length > 0 ? (
         <section className="panel">
           <h2>推移</h2>
           <p className="muted small" style={{ marginTop: '-0.35rem', marginBottom: '0.7rem' }}>

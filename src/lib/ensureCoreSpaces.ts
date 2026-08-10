@@ -121,17 +121,26 @@ export function ensureCoreSpaces(
 
   const business = byKey().get('business')
   const body = byKey().get('body')
-  const hideModuleKeys = new Set(['body', 'university', 'driving', 'creative'])
-  const hideTaskIds = new Set(
+  const hideTaskKeys = new Set(['driving', 'creative'])
+  const hideMetricKeys = new Set(['body', 'university', 'driving', 'creative'])
+  const hideTaskSpaceIds = new Set(
     spaces
       .filter((s) => {
         const k = spaceKey(s)
-        return (k && hideModuleKeys.has(k)) || hideModuleKeys.has(s.kind)
+        return (k && hideTaskKeys.has(k)) || hideTaskKeys.has(s.kind)
       })
       .map((s) => s.id),
   )
-  tasks = tasks.filter((t) => !hideTaskIds.has(t.spaceId))
-  metrics = metrics.filter((m) => !hideTaskIds.has(m.spaceId))
+  const hideMetricSpaceIds = new Set(
+    spaces
+      .filter((s) => {
+        const k = spaceKey(s)
+        return (k && hideMetricKeys.has(k)) || hideMetricKeys.has(s.kind)
+      })
+      .map((s) => s.id),
+  )
+  tasks = tasks.filter((t) => !hideTaskSpaceIds.has(t.spaceId))
+  metrics = metrics.filter((m) => !hideMetricSpaceIds.has(m.spaceId))
 
   if (business) metrics = syncDmMetricPoints(data.business, metrics, business.id)
   if (body) metrics = syncBodyMetricPoints(data.body, metrics, body.id)
