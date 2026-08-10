@@ -1,0 +1,17 @@
+---
+description: Life Hub のローカルパスは self-app/app-life-hub のみ。Web案件配下に置かない。
+alwaysApply: true
+---
+
+# Life Hub の置き場所（必須）
+
+正: `C:\Users\hiu\Desktop\self-app\app-life-hub`
+
+## 禁止
+
+- `C:\Users\hiu\Desktop\self-app\Web案件` の作成・利用
+- `C:\Users\hiu\Desktop\Web案件\app-life-hub` への clone / コピー
+- 別パスへの再クローンで「2つ目」を作ること
+
+編集・ビルド・git・デプロイは上記の正パスだけで行う。
+`Web案件` はクライアントWeb制作用であり、このアプリは置かない。
