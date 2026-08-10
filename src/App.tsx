@@ -16,7 +16,7 @@ import { UniversityPanel } from './university/UniversityPanel'
 import { DrivingPanel } from './driving/DrivingPanel'
 import { BottomNav } from './BottomNav'
 import { useHub } from './store'
-import { ensureCoreSpaces, isLockedSpace } from './lib/ensureCoreSpaces'
+import { ensureCoreSpaces } from './lib/ensureCoreSpaces'
 import { BAKED_BODY, BAKED_BUSINESS } from './data/bakedLegacy'
 import { emptyBusiness, mergeBusiness } from './business/helpers'
 import { emptyBody, hydrateBody, mergeBody } from './body/helpers'
@@ -32,7 +32,7 @@ import {
   hydrateDriving,
   mergeDriving,
 } from './driving/helpers'
-import type { SpaceKind, TaskScope } from './types'
+import type { TaskScope } from './types'
 import {
   deadlineApproachRatio,
   formatTargetDate,
@@ -526,9 +526,6 @@ function SpaceView({ spaceId }: { spaceId: string }) {
 
 function SettingsView() {
   const sync = useHub((s) => s.sync)
-  const spacesAll = useHub((s) => s.spaces)
-  const addSpace = useHub((s) => s.addSpace)
-  const removeSpace = useHub((s) => s.removeSpace)
   const setSyncEnabled = useHub((s) => s.setSyncEnabled)
   const setSyncId = useHub((s) => s.setSyncId)
   const rotateSyncId = useHub((s) => s.rotateSyncId)
@@ -538,118 +535,17 @@ function SettingsView() {
   const pushLocalOverwrite = useHub((s) => s.pushLocalOverwrite)
   const pullRemoteOverwrite = useHub((s) => s.pullRemoteOverwrite)
   const exportJson = useHub((s) => s.exportJson)
-  const [name, setName] = useState('')
-  const [kind, setKind] = useState<SpaceKind>('custom')
-  const [temporary, setTemporary] = useState(true)
   const [syncIdDraft, setSyncIdDraft] = useState(sync.syncId)
-
-  const spaces = useMemo(
-    () => (spacesAll ?? []).filter((x) => !x.archived),
-    [spacesAll],
-  )
 
   return (
     <motion.div {...pageMotion}>
       <section className="panel">
-        <h2>項目一覧</h2>
-        <p className="muted small" style={{ marginTop: '-0.35rem', marginBottom: '0.75rem' }}>
-          追加・削除はこの設定画面でのみ行えます。起業・大学・筋トレ・趣味・自動車学校は削除できません。
-        </p>
-        <div className="task-list">
-          {spaces.map((sp) => {
-            const locked = isLockedSpace(sp)
-            return (
-              <div key={sp.id} className="task-item">
-                <span
-                  className="space-tag"
-                  style={{ background: sp.color, marginRight: '0.35rem' }}
-                >
-                  {sp.name}
-                </span>
-                <span className="task-title">
-                  {sp.temporary ? (
-                    <span className="muted small">一時項目</span>
-                  ) : locked ? (
-                    <span className="muted small">固定</span>
-                  ) : (
-                    <span className="muted small">その他</span>
-                  )}
-                </span>
-                {locked ? (
-                  <span className="muted small">削除不可</span>
-                ) : (
-                  <button
-                    type="button"
-                    className="btn sm danger ghost"
-                    onClick={() => {
-                      if (confirm(`「${sp.name}」を削除しますか？`)) removeSpace(sp.id)
-                    }}
-                  >
-                    削除
-                  </button>
-                )}
-              </div>
-            )
-          })}
-        </div>
-      </section>
-
-      <section className="panel">
-        <h2>項目を追加</h2>
-        <p className="muted small" style={{ marginTop: '-0.35rem', marginBottom: '0.75rem' }}>
-          数ヶ月だけの一時項目も追加できます。下部ナビはスマホなら長押し、PCならダブルクリック後にドラッグで並べ替え。中央はクリック後に横スクロールできます。
-        </p>
-        <label className="field">
-          <span>名前</span>
-          <input
-            className="input"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="例: 学校祭 / 旅行準備"
-          />
-        </label>
-        <div className="row" style={{ marginBottom: '0.7rem' }}>
-          {(
-            [
-              ['custom', 'その他'],
-              ['business', '起業'],
-              ['body', '筋トレ'],
-            ] as const
-          ).map(([k, label]) => (
-            <button
-              key={k}
-              type="button"
-              className={`btn sm ${kind === k ? '' : 'ghost'}`}
-              onClick={() => setKind(k)}
-            >
-              {label}
-            </button>
-          ))}
-        </div>
-        <label className="row" style={{ alignItems: 'center', marginBottom: '0.8rem' }}>
-          <input
-            type="checkbox"
-            checked={temporary}
-            onChange={(e) => setTemporary(e.target.checked)}
-          />
-          <span className="small">一時項目として追加</span>
-        </label>
-        <button
-          type="button"
-          className="btn"
-          onClick={() => {
-            addSpace(name, kind, temporary)
-            setName('')
-          }}
-        >
-          追加する
-        </button>
-      </section>
-
-      <section className="panel">
         <h2>スマホ ↔ PC 同期</h2>
         <p className="muted small" style={{ marginTop: '-0.35rem', marginBottom: '0.75rem' }}>
           Puter アカウントと同じ同期IDでデータを共有します。ログインは下のボタンから（ポップアップが開きます）。
+        </p>
+        <p className="muted small" style={{ marginTop: '-0.35rem', marginBottom: '0.85rem' }}>
+          下部ナビの並べ替え: スマホは長押し、PCはダブルクリック後にドラッグ。中央はクリック後に横スクロール。
         </p>
         <ol className="muted small" style={{ margin: '0 0 0.85rem', paddingLeft: '1.2rem', lineHeight: 1.55 }}>
           <li>両方で「Puterにログイン」→「同期ON」</li>
