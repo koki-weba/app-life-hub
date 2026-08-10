@@ -9,7 +9,12 @@ declare global {
     puter?: {
       auth?: {
         isSignedIn: () => boolean | Promise<boolean>
-        signIn: () => Promise<unknown>
+        signIn: (options?: {
+          attempt_temp_user_creation?: boolean
+          request_auth?: boolean
+        }) => Promise<unknown>
+        signOut?: () => void | Promise<void>
+        getUser?: () => Promise<{ username?: string; email?: string } | null>
       }
       kv?: {
         get: (key: string) => Promise<unknown>
@@ -39,23 +44,79 @@ function kvKey(syncId: string) {
   return `lifehub_cloud_v1_${syncId}`
 }
 
-async function ensurePuterLogin() {
-  const puter = window.puter
-  if (!puter?.kv) {
-    throw new Error('Puter が読み込めていません。ネット接続を確認してください')
-  }
-  const signed =
-    typeof puter.auth?.isSignedIn === 'function'
-      ? await puter.auth.isSignedIn()
-      : false
-  if (!signed && puter.auth?.signIn) {
-    await puter.auth.signIn()
+export async function waitForPuter(timeoutMs = 12000) {
+  const start = Date.now()
+  while (!window.puter?.auth || !window.puter?.kv) {
+    if (Date.now() - start > timeoutMs) {
+      throw new Error(
+        'Puter が読み込めていません。ネット接続を確認し、ページを再読み込みしてください',
+      )
+    }
+    await new Promise((r) => setTimeout(r, 40))
   }
 }
 
-export async function pullRemote(syncId: string): Promise<AppData | null> {
-  await ensurePuterLogin()
-  const raw = await window.puter!.kv!.get(kvKey(syncId))
+function authErrorMessage(e: unknown): string {
+  if (!e || typeof e !== 'object') {
+    return e instanceof Error ? e.message : 'Puter ログインに失敗しました'
+  }
+  const err = e as { error?: string; msg?: string; message?: string }
+  if (err.error === 'popup_blocked') {
+    return 'ログイン用ポップアップがブロックされました。ブラウザで開いている場合は許可するか、ホーム画面アプリではなく Chrome / Safari のタブで開いて再度「Puterにログイン」を押してください'
+  }
+  if (err.error === 'auth_window_closed') {
+    return 'ログインがキャンセルされました。もう一度「Puterにログイン」を押してください'
+  }
+  return err.msg || err.message || 'Puter ログインに失敗しました'
+}
+
+/** ユーザー操作（ボタン）からのみ呼ぶこと（ポップアップのため） */
+export async function signInPuter() {
+  await waitForPuter()
+  try {
+    await window.puter!.auth!.signIn()
+  } catch (e) {
+    throw new Error(authErrorMessage(e))
+  }
+}
+
+export async function signOutPuter() {
+  await waitForPuter()
+  const fn = window.puter!.auth!.signOut
+  if (fn) await fn()
+}
+
+export async function getPuterSignedIn(): Promise<boolean> {
+  try {
+    await waitForPuter(4000)
+    const v = window.puter!.auth!.isSignedIn()
+    return !!(await Promise.resolve(v))
+  } catch {
+    return false
+  }
+}
+
+export async function getPuterUsername(): Promise<string | null> {
+  try {
+    if (!(await getPuterSignedIn())) return null
+    const user = await window.puter!.auth!.getUser?.()
+    return user?.username || user?.email || null
+  } catch {
+    return null
+  }
+}
+
+async function ensurePuterReady() {
+  await waitForPuter()
+  const signed = await getPuterSignedIn()
+  if (!signed) {
+    throw new Error(
+      'Puter に未ログインです。設定の「Puterにログイン」を押してから同期してください',
+    )
+  }
+}
+
+function parseRemote(raw: unknown): AppData | null {
   if (!raw) return null
   const text = typeof raw === 'string' ? raw : JSON.stringify(raw)
   const parsed = JSON.parse(text) as Partial<AppData>
@@ -82,7 +143,13 @@ export async function pullRemote(syncId: string): Promise<AppData | null> {
   }
 }
 
+export async function pullRemote(syncId: string): Promise<AppData | null> {
+  await ensurePuterReady()
+  const raw = await window.puter!.kv!.get(kvKey(syncId))
+  return parseRemote(raw)
+}
+
 export async function pushRemote(syncId: string, data: AppData) {
-  await ensurePuterLogin()
+  await ensurePuterReady()
   await window.puter!.kv!.set(kvKey(syncId), JSON.stringify(data))
 }

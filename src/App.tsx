@@ -533,6 +533,10 @@ function SettingsView() {
   const setSyncId = useHub((s) => s.setSyncId)
   const rotateSyncId = useHub((s) => s.rotateSyncId)
   const syncNow = useHub((s) => s.syncNow)
+  const puterSignIn = useHub((s) => s.puterSignIn)
+  const puterSignOut = useHub((s) => s.puterSignOut)
+  const pushLocalOverwrite = useHub((s) => s.pushLocalOverwrite)
+  const pullRemoteOverwrite = useHub((s) => s.pullRemoteOverwrite)
   const exportJson = useHub((s) => s.exportJson)
   const [name, setName] = useState('')
   const [kind, setKind] = useState<SpaceKind>('custom')
@@ -645,8 +649,22 @@ function SettingsView() {
       <section className="panel">
         <h2>スマホ ↔ PC 同期</h2>
         <p className="muted small" style={{ marginTop: '-0.35rem', marginBottom: '0.75rem' }}>
-          起業アプリと同様、Puter アカウント + 同じ同期IDで共有します。PWAとしてホーム画面追加も可能です。
+          Puter アカウントと同じ同期IDでデータを共有します。ログインは下のボタンから（ポップアップが開きます）。
         </p>
+        <ol className="muted small" style={{ margin: '0 0 0.85rem', paddingLeft: '1.2rem', lineHeight: 1.55 }}>
+          <li>両方で「Puterにログイン」→「同期ON」</li>
+          <li>同期IDを同じにする（スマホのIDをPCに貼る）</li>
+          <li>スマホで「この端末をクラウドへ上書き」</li>
+          <li>PCで「クラウドからこの端末へ取り込み」</li>
+        </ol>
+        <div className="row" style={{ marginBottom: '0.75rem' }}>
+          <button type="button" className="btn sm" onClick={() => puterSignIn()}>
+            Puterにログイン
+          </button>
+          <button type="button" className="btn sm ghost" onClick={() => puterSignOut()}>
+            ログアウト
+          </button>
+        </div>
         <div className="row" style={{ marginBottom: '0.75rem' }}>
           <button
             type="button"
@@ -696,8 +714,19 @@ function SettingsView() {
             IDをコピー
           </button>
         </div>
+        <div className="row" style={{ marginTop: '0.75rem' }}>
+          <button type="button" className="btn sm" onClick={() => pushLocalOverwrite()}>
+            この端末をクラウドへ上書き
+          </button>
+          <button type="button" className="btn sm ghost" onClick={() => pullRemoteOverwrite()}>
+            クラウドから取り込み
+          </button>
+        </div>
         <p className="muted small" style={{ marginTop: '0.75rem' }}>
           状態: {sync.status} {sync.message ? `· ${sync.message}` : ''}
+        </p>
+        <p className="muted small" style={{ marginTop: '0.35rem', marginBottom: 0 }}>
+          ホーム画面アプリでポップアップが止まる場合は、Chrome / Safari のタブで同じURLを開いてログインしてください。
         </p>
       </section>
 

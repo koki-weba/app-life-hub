@@ -21,7 +21,7 @@ import type {
   UniversityTermId,
   Workout,
 } from './types'
-import { pullRemote, pushRemote, ensureSyncId } from './sync/puterSync'
+import { pullRemote, pushRemote, ensureSyncId, signInPuter, signOutPuter, getPuterUsername } from './sync/puterSync'
 import {
   emptyBusiness,
   mergeBusiness,
@@ -93,6 +93,12 @@ type HubState = AppData & {
   rotateSyncId: () => void
   setSyncId: (id: string) => void
   syncNow: () => Promise<void>
+  puterSignIn: () => Promise<void>
+  puterSignOut: () => Promise<void>
+  /** この端末のデータをクラウドに強制上書き（スマホ側で使う） */
+  pushLocalOverwrite: () => Promise<void>
+  /** クラウドをこの端末に強制取り込み（PC側で使う） */
+  pullRemoteOverwrite: () => Promise<void>
   replaceData: (data: AppData) => void
   exportJson: () => string
 }
@@ -656,6 +662,139 @@ export const useHub = create<HubState>()(
             }
           } catch (e) {
             const msg = e instanceof Error ? e.message : '同期に失敗'
+            set((cur) => ({
+              sync: { ...cur.sync, status: 'error', message: msg },
+            }))
+          }
+        },
+
+        puterSignIn: async () => {
+          set((s) => ({
+            sync: { ...s.sync, status: 'syncing', message: 'Puter ログイン中…' },
+          }))
+          try {
+            await signInPuter()
+            const name = await getPuterUsername()
+            set((s) => ({
+              sync: {
+                ...s.sync,
+                status: 'idle',
+                message: name ? `Puter ログイン済み（${name}）` : 'Puter ログイン済み',
+              },
+            }))
+          } catch (e) {
+            const msg = e instanceof Error ? e.message : 'ログインに失敗'
+            set((s) => ({
+              sync: { ...s.sync, status: 'error', message: msg },
+            }))
+          }
+        },
+
+        puterSignOut: async () => {
+          try {
+            await signOutPuter()
+            set((s) => ({
+              sync: { ...s.sync, status: 'idle', message: 'Puter からログアウトしました' },
+            }))
+          } catch (e) {
+            const msg = e instanceof Error ? e.message : 'ログアウトに失敗'
+            set((s) => ({
+              sync: { ...s.sync, status: 'error', message: msg },
+            }))
+          }
+        },
+
+        pushLocalOverwrite: async () => {
+          const s = get()
+          if (!s.sync.enabled) {
+            set({ sync: { ...s.sync, status: 'offline', message: '先に同期ONにしてください' } })
+            return
+          }
+          const syncId = ensureSyncId(s.sync.syncId)
+          set({
+            sync: { ...s.sync, syncId, status: 'syncing', message: 'この端末をクラウドへ上書き中…' },
+          })
+          try {
+            const now = Date.now()
+            const local: AppData = {
+              version: 2,
+              spaces: get().spaces,
+              tasks: get().tasks,
+              metrics: get().metrics,
+              business: get().business,
+              body: get().body,
+              university: get().university,
+              driving: get().driving,
+              sync: { ...get().sync, syncId },
+              updatedAt: now,
+            }
+            await pushRemote(syncId, local)
+            set({
+              updatedAt: now,
+              sync: {
+                ...get().sync,
+                syncId,
+                enabled: true,
+                status: 'idle',
+                lastPushedAt: now,
+                message: 'この端末のデータをクラウドに上書きしました（他端末で「クラウドから取り込み」）',
+              },
+            })
+          } catch (e) {
+            const msg = e instanceof Error ? e.message : '上書きに失敗'
+            set((cur) => ({
+              sync: { ...cur.sync, status: 'error', message: msg },
+            }))
+          }
+        },
+
+        pullRemoteOverwrite: async () => {
+          const s = get()
+          if (!s.sync.enabled) {
+            set({ sync: { ...s.sync, status: 'offline', message: '先に同期ONにしてください' } })
+            return
+          }
+          const syncId = ensureSyncId(s.sync.syncId)
+          set({
+            sync: { ...s.sync, syncId, status: 'syncing', message: 'クラウドから取り込み中…' },
+          })
+          try {
+            const remote = await pullRemote(syncId)
+            if (!remote) {
+              set({
+                sync: {
+                  ...get().sync,
+                  syncId,
+                  status: 'error',
+                  message: 'クラウドにデータがありません。先にスマホで「この端末をクラウドへ上書き」してください',
+                },
+              })
+              return
+            }
+            set({
+              ...remote,
+              version: 2,
+              business: remote.business ?? emptyBusiness(),
+              body: remote.body ? hydrateBody(remote.body) : emptyBody(),
+              university: remote.university
+                ? hydrateUniversity(remote.university)
+                : emptyUniversity(),
+              driving: remote.driving
+                ? hydrateDriving(remote.driving)
+                : emptyDriving(),
+              sync: {
+                ...get().sync,
+                syncId,
+                enabled: true,
+                status: 'idle',
+                lastPulledAt: Date.now(),
+                message: 'クラウドのデータをこの端末に取り込みました',
+              },
+              activeView: get().activeView,
+              activeSpaceId: get().activeSpaceId,
+            })
+          } catch (e) {
+            const msg = e instanceof Error ? e.message : '取り込みに失敗'
             set((cur) => ({
               sync: { ...cur.sync, status: 'error', message: msg },
             }))
