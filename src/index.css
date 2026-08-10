@@ -1896,48 +1896,6 @@ select.input {
   color: var(--body-brand-deep);
 }
 
-.body-quick-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0.7rem;
-  margin-bottom: 0.75rem;
-}
-.body-quick-grid .body-quick-btn:nth-child(3) {
-  grid-column: 1 / -1;
-}
-.body-quick-btn {
-  appearance: none;
-  border: 1px solid var(--body-border);
-  background: var(--body-surface);
-  border-radius: var(--body-radius);
-  padding: 0.95rem 0.9rem;
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  color: var(--body-text);
-  font: inherit;
-  font-size: 0.9rem;
-  font-weight: 700;
-  box-shadow: var(--body-shadow);
-  text-align: left;
-  transition: transform 0.15s var(--ease);
-}
-.body-quick-btn:active { transform: scale(0.97); }
-.body-quick-icon {
-  width: 2.35rem;
-  height: 2.35rem;
-  border-radius: 12px;
-  display: grid;
-  place-items: center;
-  background: #fef2f2;
-  color: var(--body-brand);
-  flex-shrink: 0;
-}
-.body-quick-icon svg {
-  width: 1.15rem;
-  height: 1.15rem;
-}
-
 .body-today-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;

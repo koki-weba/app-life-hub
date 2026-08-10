@@ -321,52 +321,6 @@ export function BodyPanel() {
             </div>
           </section>
 
-          <div className="body-quick-grid">
-            <button
-              type="button"
-              className="body-quick-btn"
-              onClick={() => {
-                selectDate(today)
-                setRecordFocus('weight')
-              }}
-            >
-              <span className="body-quick-icon" aria-hidden>
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M6 4h12l1 16H5L6 4z" />
-                  <path d="M12 9v5M9 9h6" />
-                </svg>
-              </span>
-              <span>体重を記録</span>
-            </button>
-            <button
-              type="button"
-              className="body-quick-btn"
-              onClick={() => {
-                selectDate(today)
-                setRecordFocus('cal')
-              }}
-            >
-              <span className="body-quick-icon" aria-hidden>
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M3 11h18M12 11v9M6 11a6 6 0 0 1 12 0" />
-                </svg>
-              </span>
-              <span>カロリーを記録</span>
-            </button>
-            <button
-              type="button"
-              className="body-quick-btn"
-              onClick={() => setTab('train')}
-            >
-              <span className="body-quick-icon" aria-hidden>
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M6.5 6.5l11 11M4 10l2-2 2 2M16 14l2 2 2-2M8 4l2 2M14 18l2 2" />
-                </svg>
-              </span>
-              <span>筋トレを記録</span>
-            </button>
-          </div>
-
           <section className="body-card">
             <div className="body-card-head">
               <h3>今日の記録</h3>
