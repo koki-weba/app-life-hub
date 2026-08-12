@@ -155,14 +155,8 @@ export function BusinessPanel() {
               aria-label="サイト制作チェック"
               onClick={() => setSiteBuildDone(sitePeriod.start, !siteDone)}
             />
-            <span className="task-title">
-              サイト制作（2週に1本）
-              <span className="muted small"> · {sitePeriod.label}</span>
-            </span>
+            <span className="task-title">サイト制作（2週に1本）</span>
           </div>
-          <p className="muted small" style={{ marginTop: '0.35rem' }}>
-            月曜始まり。この期間で1サイト完成したらチェック
-          </p>
         </section>
       )}
 
