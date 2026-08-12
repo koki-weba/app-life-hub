@@ -290,8 +290,8 @@ export const useHub = create<HubState>()(
             ...stamp(),
             business: {
               ...s.business,
-              dmDailyGoal: daily || 10,
-              dmWeeklyGoal: weekly || 80,
+              dmDailyGoal: daily || 20,
+              dmWeeklyGoal: weekly || 140,
             },
           })),
 

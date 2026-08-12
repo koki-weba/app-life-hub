@@ -8,7 +8,7 @@
   "settings": {
     "ultimateMonthly": 600000,
     "ultimateTakeHome": 400000,
-    "dmDailyGoal": 10,
+    "dmDailyGoal": 20,
     "dmWeeklyGoal": 140,
     "defaultTakeHomeRate": 67
   },

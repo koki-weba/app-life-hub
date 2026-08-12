@@ -4,8 +4,8 @@ import { uid } from '../lib/id'
 
 export function emptyBusiness(): BusinessData {
   return {
-    dmDailyGoal: 10,
-    dmWeeklyGoal: 80,
+    dmDailyGoal: 20,
+    dmWeeklyGoal: 140,
     salesLogs: [],
     snsLogs: [],
     clients: [],

@@ -120,7 +120,7 @@ export function BusinessPanel() {
                 min={1}
                 value={business.dmDailyGoal}
                 onChange={(e) =>
-                  setBusinessGoals(Number(e.target.value) || 10, business.dmWeeklyGoal)
+                  setBusinessGoals(Number(e.target.value) || 20, business.dmWeeklyGoal)
                 }
               />
             </label>
@@ -132,7 +132,7 @@ export function BusinessPanel() {
                 min={1}
                 value={business.dmWeeklyGoal}
                 onChange={(e) =>
-                  setBusinessGoals(business.dmDailyGoal, Number(e.target.value) || 80)
+                  setBusinessGoals(business.dmDailyGoal, Number(e.target.value) || 140)
                 }
               />
             </label>
