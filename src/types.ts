@@ -91,6 +91,13 @@ export interface IgEntry {
   createdAt: number
 }
 
+/** 2週に1サイト制作チェック（月曜起点の2週期間） */
+export interface SiteBuildCheck {
+  /** 当該期間の開始日（月曜 yyyy-MM-dd） */
+  periodStart: string
+  done: boolean
+}
+
 export interface BusinessData {
   dmDailyGoal: number
   dmWeeklyGoal: number
@@ -98,6 +105,7 @@ export interface BusinessData {
   snsLogs: SnsWeekLog[]
   clients: Client[]
   igList: IgEntry[]
+  siteBuild: SiteBuildCheck
 }
 
 /** 筋トレモジュール（旧体重アプリ相当） */

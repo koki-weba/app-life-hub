@@ -6,6 +6,8 @@ import { BusinessPlanPanel } from './BusinessPlanPanel'
 import {
   dmCountOn,
   dmCountThisWeek,
+  isSiteBuildDone,
+  siteBuildPeriod,
   sundayOf,
   todayStr,
   weekRangeLabel,
@@ -24,6 +26,7 @@ export function BusinessPanel() {
   const business = useHub((s) => s.business)
   const bumpDm = useHub((s) => s.bumpDm)
   const setBusinessGoals = useHub((s) => s.setBusinessGoals)
+  const setSiteBuildDone = useHub((s) => s.setSiteBuildDone)
   const saveSnsWeek = useHub((s) => s.saveSnsWeek)
   const deleteSnsWeek = useHub((s) => s.deleteSnsWeek)
   const saveClient = useHub((s) => s.saveClient)
@@ -54,6 +57,8 @@ export function BusinessPanel() {
   const today = todayStr()
   const todayDm = dmCountOn(business.salesLogs, today)
   const weekDm = dmCountThisWeek(business.salesLogs)
+  const sitePeriod = useMemo(() => siteBuildPeriod(), [today])
+  const siteDone = isSiteBuildDone(business.siteBuild, sitePeriod.start)
 
   const filteredIg = useMemo(() => {
     const q = igQuery.trim().toLowerCase()
@@ -137,6 +142,27 @@ export function BusinessPanel() {
               />
             </label>
           </div>
+
+          <div
+            className="task-item"
+            data-done={siteDone}
+            style={{ marginTop: '1rem' }}
+          >
+            <button
+              type="button"
+              className="task-check"
+              data-on={siteDone}
+              aria-label="サイト制作チェック"
+              onClick={() => setSiteBuildDone(sitePeriod.start, !siteDone)}
+            />
+            <span className="task-title">
+              サイト制作（2週に1本）
+              <span className="muted small"> · {sitePeriod.label}</span>
+            </span>
+          </div>
+          <p className="muted small" style={{ marginTop: '0.35rem' }}>
+            月曜始まり。この期間で1サイト完成したらチェック
+          </p>
         </section>
       )}
 

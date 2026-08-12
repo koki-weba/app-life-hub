@@ -75,6 +75,7 @@ type HubState = AppData & {
   addMetricPoint: (seriesId: string, value: number, date?: string) => void
   bumpDm: (delta: number) => void
   setBusinessGoals: (daily: number, weekly: number) => void
+  setSiteBuildDone: (periodStart: string, done: boolean) => void
   saveSnsWeek: (log: Omit<SnsWeekLog, 'id'> & { id?: string }) => void
   deleteSnsWeek: (id: string) => void
   saveClient: (client: Omit<Client, 'id' | 'updatedAt'> & { id?: string }) => void
@@ -292,6 +293,15 @@ export const useHub = create<HubState>()(
               ...s.business,
               dmDailyGoal: daily || 20,
               dmWeeklyGoal: weekly || 140,
+            },
+          })),
+
+        setSiteBuildDone: (periodStart, done) =>
+          set((s) => ({
+            ...stamp(),
+            business: {
+              ...s.business,
+              siteBuild: { periodStart, done },
             },
           })),
 

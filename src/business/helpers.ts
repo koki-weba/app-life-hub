@@ -1,6 +1,10 @@
-import { format, startOfWeek, addDays, parseISO, isWithinInterval } from 'date-fns'
-import type { AppData, BusinessData, Client, DmLog, IgEntry, SnsWeekLog } from '../types'
+import { format, startOfWeek, addDays, parseISO, isWithinInterval, differenceInCalendarDays } from 'date-fns'
+import type { AppData, BusinessData, Client, DmLog, IgEntry, SiteBuildCheck, SnsWeekLog } from '../types'
 import { uid } from '../lib/id'
+
+export function emptySiteBuild(): SiteBuildCheck {
+  return { periodStart: '', done: false }
+}
 
 export function emptyBusiness(): BusinessData {
   return {
@@ -10,6 +14,7 @@ export function emptyBusiness(): BusinessData {
     snsLogs: [],
     clients: [],
     igList: [],
+    siteBuild: emptySiteBuild(),
   }
 }
 
@@ -17,7 +22,7 @@ export function todayStr(d = new Date()) {
   return format(d, 'yyyy-MM-dd')
 }
 
-/** 週の起点（日曜） */
+/** 週の起点（日曜）※週次SNS記録用 */
 export function sundayOf(dateStr: string) {
   const d = parseISO(dateStr)
   return format(startOfWeek(d, { weekStartsOn: 0 }), 'yyyy-MM-dd')
@@ -27,6 +32,28 @@ export function weekRangeLabel(weekStart: string) {
   const end = format(addDays(parseISO(weekStart), 6), 'MM/dd')
   const start = format(parseISO(weekStart), 'MM/dd')
   return `${start}〜${end}`
+}
+
+/** サイト制作チェックの2週期間アンカー（月曜） */
+const SITE_BUILD_EPOCH = '2026-01-05'
+
+/** 月曜始まり・2週ごとのサイト制作期間 */
+export function siteBuildPeriod(anchor = new Date()) {
+  const monday = startOfWeek(anchor, { weekStartsOn: 1 })
+  const epoch = parseISO(SITE_BUILD_EPOCH)
+  const days = differenceInCalendarDays(monday, epoch)
+  const periodIndex = Math.floor(days / 14)
+  const start = addDays(epoch, periodIndex * 14)
+  const end = addDays(start, 13)
+  return {
+    start: format(start, 'yyyy-MM-dd'),
+    end: format(end, 'yyyy-MM-dd'),
+    label: `${format(start, 'MM/dd')}〜${format(end, 'MM/dd')}`,
+  }
+}
+
+export function isSiteBuildDone(siteBuild: SiteBuildCheck | undefined, periodStart: string) {
+  return !!siteBuild && siteBuild.periodStart === periodStart && siteBuild.done
 }
 
 export function dmCountOn(logs: DmLog[], date: string) {
@@ -157,6 +184,11 @@ export function mergeBusiness(existing: BusinessData, incoming: BusinessData): B
     snsLogs: [...snsByWeek.values()].sort((a, b) => b.weekStart.localeCompare(a.weekStart)),
     clients: [...clientsById.values()],
     igList: [...igByNorm.values()],
+    siteBuild: existing.siteBuild?.periodStart
+      ? existing.siteBuild
+      : incoming.siteBuild?.periodStart
+        ? incoming.siteBuild
+        : emptySiteBuild(),
   }
 }
 
